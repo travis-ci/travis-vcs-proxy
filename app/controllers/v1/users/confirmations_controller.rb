@@ -4,7 +4,7 @@ class V1::Users::ConfirmationsController < Devise::ConfirmationsController
   clear_respond_to
   respond_to :json
 
-  def create
+  def show
     resource = nil
     ActiveRecord::Base.transaction do
       resource = resource_class.confirm_by_token(params[:confirmation_token])
