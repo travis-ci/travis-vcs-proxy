@@ -2,6 +2,7 @@
 
 class V1::UsersController < ApplicationController
   before_action :require_authentication, except: [:request_password_reset, :reset_password]
+  skip_before_action :require_2fa, only: [:show, :request_password_reset, :reset_password]
 
   def show
     render json: presented_entity(:user, current_user)

@@ -285,5 +285,15 @@ Devise.setup do |config|
   #
   config.jwt do |jwt|
     jwt.secret = Settings.jwt.secret
+
+    jwt.dispatch_requests = [
+      ['POST', %r{^/v1/users/login$}],
+      ['GET', %r{^/v1/users/confirmation}],
+      ['POST', %r{^/v1/user/two_factor_auth/enable$}],
+    ]
+
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/v1/users/logout$}],
+    ]
   end
 end

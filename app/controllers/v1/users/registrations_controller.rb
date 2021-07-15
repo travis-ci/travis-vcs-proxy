@@ -3,6 +3,7 @@
 class V1::Users::RegistrationsController < Devise::RegistrationsController
   clear_respond_to
   respond_to :json
+  skip_before_action :require_2fa
 
   def create
     build_resource(sign_up_params)

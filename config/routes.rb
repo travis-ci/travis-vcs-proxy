@@ -24,6 +24,14 @@ Rails.application.routes.draw do
 
         get :server_providers
       end
+
+      resource :two_factor_auth, controller: 'users/two_factor_auth', only: [] do
+        collection do
+          get :url
+          get :codes
+          post :enable
+        end
+      end
     end
 
     resources :server_providers, only: [:create, :show, :update] do

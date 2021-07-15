@@ -3,13 +3,12 @@
 class V1::Users::SessionsController < Devise::SessionsController
   clear_respond_to
   respond_to :json
+  skip_before_action :require_2fa
 
-  # Overriding because we don't need to send any answer
   def create
     resource = warden.authenticate!(auth_options)
-    sign_in(resource_name, resource)
 
-    head :ok
+    render json: { token: request.env[Warden::JWTAuth::Hooks::PREPARED_TOKEN_ENV_KEY], otp_enabled: resource.otp_required_for_login? }
   end
 
   private
