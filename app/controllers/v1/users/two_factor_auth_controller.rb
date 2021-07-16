@@ -19,7 +19,7 @@ class V1::Users::TwoFactorAuthController < ApplicationController
 
     User.revoke_jwt(nil, current_user)
     warden.set_user(current_user)
-    render json: { token: request.env[Warden::JWTAuth::Hooks::PREPARED_TOKEN_ENV_KEY], otp_enabled: true }
+    render json: { token: current_user_jwt_token, otp_enabled: true }
   end
 
   def codes

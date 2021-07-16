@@ -18,4 +18,8 @@ class ApplicationController < ActionController::API
   def presented_entity(resource_name, resource)
     "#{resource_name.to_s.classify}Serializer".constantize.new(resource).to_h
   end
+
+  def current_user_jwt_token
+    request.env[Warden::JWTAuth::Hooks::PREPARED_TOKEN_ENV_KEY]
+  end
 end
