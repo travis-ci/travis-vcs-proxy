@@ -7,15 +7,17 @@ class V1::Users::TwoFactorAuthController < ApplicationController
   def url
     if current_user.otp_secret.blank?
       current_user.otp_secret = User.generate_otp_secret
-      render json: { errors: current_user.errors } and return unless current_user.save
+      render json: { errors: current_user.errors }, status: :unprocessable_entity and return unless current_user.save
     end
 
     render json: { url: current_user.otp_provisioning_uri(current_user.email, issuer: 'Travis CI VCS Proxy') }
   end
 
   def enable
+    render json: { errors: [ 'Wrong OTP code' ] }, status: :unprocessable_entity and return unless params[:otp_attempt] == current_user.current_otp
+
     current_user.otp_required_for_login = true
-    render json: { errors: current_user.errors } and return unless current_user.save
+    render json: { errors: current_user.errors }, status: :unprocessable_entity and return unless current_user.save
 
     User.revoke_jwt(nil, current_user)
     warden.set_user(current_user)
@@ -24,7 +26,7 @@ class V1::Users::TwoFactorAuthController < ApplicationController
 
   def codes
     codes = current_user.generate_otp_backup_codes!
-    render json: { errors: current_user.errors } unless current_user.save
+    render json: { errors: current_user.errors }, status: :unprocessable_entity unless current_user.save
 
     render json: { codes: codes }
   end
