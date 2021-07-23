@@ -31,6 +31,10 @@ class User < ApplicationRecord
     perm.save
   end
 
+  def repository_permission(repository_id)
+    repository_permissions.find_by(repository_id: repository_id)
+  end
+
   def mark_as_deleted
     update_columns(email: '', name: nil, active: false)
   end

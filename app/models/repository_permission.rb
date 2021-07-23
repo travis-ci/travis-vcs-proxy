@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 class RepositoryPermission < ApplicationRecord
+  include P4HostSettings
+
   belongs_to :repository
   belongs_to :user
 
-  READ = 1
-  WRITE = 2
-  ADMIN = 3
-  SUPER = 4
+  enum permission: [ :read, :write, :admin, :super ]
 end

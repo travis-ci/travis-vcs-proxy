@@ -12,6 +12,26 @@ class V1::RepositoriesController < ApplicationController
     render json: @repository.refs.map { |ref| presented_entity(:full_ref, ref) }
   end
 
+  def token
+    head :bad_request and return if params[:username].blank? || params[:token].blank?
+
+    permission = current_user.repository_permission(@repository.id)
+    head :forbidden and return if permission.blank? || (!permission.owner? && !permission.admin?)
+
+    begin
+      ValidateP4Credentials.new(params[:username], params[:token], @repository.server_provider.url).call
+    rescue ValidateP4Credentials::ValidationFailed
+      render json: { errors: [ 'Cannot authenticate' ] }, status: :unprocessable_entity and return
+    end
+
+    settings = permission.settings(:p4_host)
+    settings.username = params[:username]
+    settings.token = params[:token]
+    head :ok and return if permission.save
+
+    render json: { errors: permission.errors }, status: :unprocessable_entity
+  end
+
   private
 
   def set_repository

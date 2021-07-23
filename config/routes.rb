@@ -55,6 +55,7 @@ Rails.application.routes.draw do
 
       member do
         get :refs
+        patch :token
       end
     end
   end
