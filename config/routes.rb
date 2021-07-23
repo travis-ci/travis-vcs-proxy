@@ -14,6 +14,12 @@ Rails.application.routes.draw do
         register: 'sign_up'
       }
 
+    scope 'users/confirmation' do
+      devise_scope :user do
+        post :resend, to: 'users/confirmations#resend', as: :resend_confirmation
+      end
+    end
+
     resource :user, only: [:show] do
       collection do
         get :emails
