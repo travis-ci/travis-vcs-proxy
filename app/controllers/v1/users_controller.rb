@@ -80,6 +80,10 @@ class V1::UsersController < ApplicationController
     }
   end
 
+  def repositories
+    render json: current_user.repositories.map { |repository| presented_entity(:repository, repository) }
+  end
+
   def sync
     SyncJob.perform_later(SyncJob::SyncType::USER, current_user.id)
 

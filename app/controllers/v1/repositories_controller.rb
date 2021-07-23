@@ -12,6 +12,17 @@ class V1::RepositoriesController < ApplicationController
     render json: @repository.refs.map { |ref| presented_entity(:full_ref, ref) }
   end
 
+  def content
+    head :bad_request and return if params[:ref].blank? || params[:path].blank?
+
+    connection = Travis::VcsProxy::P4Connection.new(@repository.server_provider.url, @repository.server_provider.settings(:p4_host).username, @repository.server_provider.token)
+
+    result = connection.file_contents(@repository.name, params[:path], params[:ref].presence)
+    render json: { errors: [ 'Cannot render file' ] }, status: :unprocessable_entity and return if result.blank?
+
+    render plain: result[1]
+  end
+
   def sync
     SyncJob.perform_later(SyncJob::SyncType::REPOSITORY, @repository.id, current_user.id)
 

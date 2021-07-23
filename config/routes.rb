@@ -30,6 +30,7 @@ Rails.application.routes.draw do
         post :sync
 
         get :server_providers
+        get :repositories
       end
 
       resource :two_factor_auth, controller: 'users/two_factor_auth', only: [] do
@@ -66,6 +67,7 @@ Rails.application.routes.draw do
 
       member do
         get :refs
+        get 'content/:ref/(*path)', action: :content, format: false
         post :sync
       end
     end

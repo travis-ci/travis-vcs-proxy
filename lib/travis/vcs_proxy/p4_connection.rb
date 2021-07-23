@@ -61,6 +61,13 @@ module Travis
         {}
       end
 
+      def file_contents(repository_name, path, ref)
+        p4.run_print("//#{repository_name}/#{path}##{ref}")
+      rescue P4Exception => e
+        puts e.message.inspect
+        nil
+      end
+
       private
 
       def p4
