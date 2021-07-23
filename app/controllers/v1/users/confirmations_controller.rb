@@ -16,8 +16,8 @@ class V1::Users::ConfirmationsController < Devise::ConfirmationsController
   def resend
     head :bad_request and return if params[:email].blank?
 
-    user = User.find_by!(email: params[:email])
-    head :ok and return if user.confirmed?
+    user = User.find_by(email: params[:email])
+    head :ok and return if user.blank? || user.confirmed?
 
     user.resend_confirmation_instructions
 
