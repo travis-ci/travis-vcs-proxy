@@ -11,22 +11,21 @@ class V1::ServerProvidersController < ApplicationController
   def create
     head :bad_request and return if params[:server_provider].blank? || !PROVIDER_KLASS.has_key?(params[:server_provider][:type])
 
-    success = true
     klass = PROVIDER_KLASS[params[:server_provider][:type]]
     errors = []
     provider = nil
     ActiveRecord::Base.transaction do
-      unless provider = klass.find_by(name: params[:server_provider][:name])
+      unless provider = klass.find_by(url: params[:server_provider][:url])
         provider = klass.new(server_provider_params)
         unless provider.save
-          success = false
           errors = provider.errors
           raise ActiveRecord::Rollback
         end
       end
 
+      set_provider_credentials(provider, errors)
+
       unless current_user.set_server_provider_permission(provider.id, ServerProviderPermission::OWNER)
-        success = false
         errors << 'Cannot set permission for user'
         raise ActiveRecord::Rollback
       end
@@ -35,9 +34,9 @@ class V1::ServerProvidersController < ApplicationController
     data = presented_entity(:server_provider, provider)
     data[:type] = PROVIDER_KLASS.invert[data[:type].constantize]
 
-    render json: data and return if success
+    render json: data and return if errors.blank?
 
-    render json: { errors: provider.errors }, status: :unprocessable_entity
+    render json: { errors: errors }, status: :unprocessable_entity
   end
 
   def show
@@ -51,17 +50,19 @@ class V1::ServerProvidersController < ApplicationController
     permission = current_user.server_provider_permission(@server_provider.id)
     head :forbidden and return if permission.blank? || !permission.owner?
 
-    update_params = server_provider_params.dup
-    if params.has_key?(:server_provider) && params[:server_provider][:token].present?
-      update_params[:listener_token] = params[:server_provider][:token]
+    errors = []
+    ActiveRecord::Base.transaction do
+      unless @server_provider.update(server_provider_params)
+        errors = @server_provider.errors
+        raise ActiveRecord::Rollback
+      end
+
+      set_provider_credentials(@server_provider, errors)
     end
 
-    if @server_provider.update(update_params)
-      head :ok
-      return
-    end
+    head :ok and return if errors.blank?
 
-    render json: { errors: @server_provider.errors }, status: :unprocessable_entity
+    render json: { errors: errors }, status: :unprocessable_entity
   end
 
   def authenticate
@@ -76,6 +77,13 @@ class V1::ServerProvidersController < ApplicationController
           success = false
           raise ActiveRecord::Rollback
         end
+      end
+
+      begin
+        ValidateP4Credentials.new(params[:username], params[:token], @server_provider.url).call
+      rescue ValidateP4Credentials::ValidationFailed => e
+        success = false
+        raise ActiveRecord::Rollback
       end
 
       setting = permission.setting || permission.build_setting
@@ -116,5 +124,26 @@ class V1::ServerProvidersController < ApplicationController
 
   def set_server_provider
     @server_provider = ServerProvider.find(params[:id])
+  end
+
+  def set_provider_credentials(provider, errors)
+    return if params[:server_provider][:username].blank? || params[:server_provider][:token].blank?
+
+    begin
+      ValidateP4Credentials.new(params[:server_provider][:username], params[:server_provider][:token], provider.url).call
+    rescue ValidateP4Credentials::ValidationFailed => e
+      success = false
+      errors << 'Cannot authenticate'
+      raise ActiveRecord::Rollback
+    end
+
+    settings = provider.settings(:p4_host)
+    settings.username = params[:server_provider][:username]
+    settings.token = params[:server_provider][:token]
+    unless provider.save
+      success = false
+      errors << 'Cannot save credentials'
+      raise ActiveRecord::Rollback
+    end
   end
 end
