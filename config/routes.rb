@@ -51,11 +51,16 @@ Rails.application.routes.draw do
     end
 
     resources :repositories, only: [:show] do
-      resources :branches, only: [:index, :show]
+      resources :branches, controller: 'repositories/branches', only: [:index, :show]
+      resources :token, controller: 'repositories/token', only: [] do
+        collection do
+          patch :set
+          delete :destroy
+        end
+      end
 
       member do
         get :refs
-        patch :token
       end
     end
   end

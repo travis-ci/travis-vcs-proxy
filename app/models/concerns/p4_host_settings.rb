@@ -9,7 +9,7 @@ module P4HostSettings
     end
 
     def token=(token_value)
-      settings(:p4_host).token = encrypted_token(token_value)
+      settings(:p4_host).token = token_value.blank? ? token_value : encrypted_token(token_value)
     end
 
     def token

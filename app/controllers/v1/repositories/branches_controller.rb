@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class V1::BranchesController < ApplicationController
+class V1::Repositories::BranchesController < ApplicationController
   before_action :require_authentication
   before_action :set_repository
   before_action :set_branch, only: [:show]
