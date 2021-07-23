@@ -7,10 +7,13 @@ class V1::Users::ConfirmationsController < Devise::ConfirmationsController
 
   def show
     user = User.confirm_by_token(params[:confirmation_token])
-    render json: { errors: user.errors }, status: :unprocessable_entity and return if user.errors.present?
+    if user.errors.present?
+      redirect_uri = URI.join(Settings.web_url, 'unconfirmed')
+      redirect_uri.query = 'error=expired'
+      redirect_to redirect_uri.to_s and return
+    end
 
-    warden.set_user(user)
-    render json: { token: current_user_jwt_token, otp_enabled: false }
+    redirect_to URI.join(Settings.web_url, 'confirmed').to_s
   end
 
   def resend

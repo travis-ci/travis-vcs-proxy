@@ -65,8 +65,6 @@ Rails.application.configure do
   #
   config.debug_exception_response_format = :api
 
-  config.action_mailer.default_url_options = { host: 'localhost' }
-
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: 'mailhog',

@@ -25,5 +25,7 @@ module App
     #
     # config.time_zone = "Central Time (US & Canada)"
     config.eager_load_paths << Rails.root.join("lib")
+
+    config.action_mailer.default_url_options = { host: Settings.api_url }
   end
 end
