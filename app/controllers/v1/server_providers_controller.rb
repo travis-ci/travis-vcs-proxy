@@ -14,6 +14,7 @@ class V1::ServerProvidersController < ApplicationController
     success = true
     klass = PROVIDER_KLASS[params[:server_provider][:type]]
     errors = []
+    provider = nil
     ActiveRecord::Base.transaction do
       unless provider = klass.find_by(name: params[:server_provider][:name])
         provider = klass.new(server_provider_params)
@@ -31,7 +32,10 @@ class V1::ServerProvidersController < ApplicationController
       end
     end
 
-    head :ok and return if success
+    data = presented_entity(:server_provider, provider)
+    data[:type] = PROVIDER_KLASS.invert[data[:type].constantize]
+
+    render json: data and return if success
 
     render json: { errors: provider.errors }, status: :unprocessable_entity
   end
