@@ -21,7 +21,12 @@ class V1::UsersController < ApplicationController
   end
 
   def update_password
-    head :bad_request and return if params[:password].blank? || params[:password_confirmation].blank?
+    head :bad_request and return if params[:current_password].blank? || params[:password].blank? || params[:password_confirmation].blank?
+
+    unless current_user.valid_password?(params[:current_password])
+      render json: { errors: [ 'Invalid current password' ] }, status: :unprocessable_entity
+      return
+    end
 
     unless params[:password] == params[:password_confirmation]
       render json: { errors: [ 'Password does not match confirmation' ] }, status: :unprocessable_entity
