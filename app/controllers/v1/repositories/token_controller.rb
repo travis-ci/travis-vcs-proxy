@@ -16,22 +16,22 @@ class V1::Repositories::TokenController < ApplicationController
       render json: { errors: [ 'Cannot authenticate' ] }, status: :unprocessable_entity and return
     end
 
-    permission.settings(:p4_host).username = params[:username]
-    permission.token = params[:token]
-    head :ok and return if permission.save
+    @repository.settings(:p4_host).username = params[:username]
+    @repository.token = params[:token]
+    head :ok and return if @repository.save
 
-    render json: { errors: permission.errors }, status: :unprocessable_entity
+    render json: { errors: @repository.errors }, status: :unprocessable_entity
   end
 
   def destroy
     permission = current_user.repository_permission(@repository.id)
     head :forbidden and return if permission.blank? || (!permission.owner? && !permission.admin?)
 
-    permission.settings(:p4_host).username = nil
-    permission.token = nil
-    head :ok and return if permission.save
+    @repository.settings(:p4_host).username = nil
+    @repository.token = nil
+    head :ok and return if @repository.save
 
-    render json: { errors: permission.errors }, status: :unprocessable_entity
+    render json: { errors: @repository.errors }, status: :unprocessable_entity
   end
 
   private

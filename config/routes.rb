@@ -27,6 +27,7 @@ Rails.application.routes.draw do
         patch :update_password
         post :request_password_reset
         post :reset_password
+        post :sync
 
         get :server_providers
       end
@@ -65,6 +66,7 @@ Rails.application.routes.draw do
 
       member do
         get :refs
+        post :sync
       end
     end
   end

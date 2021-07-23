@@ -107,7 +107,7 @@ class V1::ServerProvidersController < ApplicationController
   end
 
   def sync
-    SyncJob.perform_later(SyncJob::SyncType::SERVER_PROVIDER, @server_provider.id)
+    SyncJob.perform_later(SyncJob::SyncType::SERVER_PROVIDER, @server_provider.id, current_user.id)
 
     head :ok
   end

@@ -12,6 +12,12 @@ class V1::RepositoriesController < ApplicationController
     render json: @repository.refs.map { |ref| presented_entity(:full_ref, ref) }
   end
 
+  def sync
+    SyncJob.perform_later(SyncJob::SyncType::REPOSITORY, @repository.id, current_user.id)
+
+    head :ok
+  end
+
   private
 
   def set_repository

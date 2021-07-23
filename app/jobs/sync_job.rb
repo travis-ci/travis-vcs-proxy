@@ -9,12 +9,13 @@ class SyncJob < ApplicationJob
 
   queue_as :default
 
-  def perform(sync_type, id)
-    syncer = Travis::VcsProxy::Syncer.new
+  def perform(sync_type, id, user_id = nil)
+    user = user_id.present? ? User.find(user_id) : User.find(id)
+    syncer = Travis::VcsProxy::Syncer.new(user)
     case sync_type
     when SyncType::SERVER_PROVIDER then syncer.sync_server_provider(ServerProvider.find(id))
     when SyncType::REPOSITORY then syncer.sync_repository(Repository.find(id))
-    when SyncType::USER then syncer.sync_user(User.find(id))
+    when SyncType::USER then syncer.sync_user
     end
   end
 end

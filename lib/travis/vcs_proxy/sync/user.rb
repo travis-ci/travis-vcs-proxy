@@ -9,6 +9,9 @@ module Travis
         end
 
         def sync
+          @user.server_providers.each do |server_provider|
+            Travis::VcsProxy::Sync::ServerProvider.new(server_provider, @user).sync
+          end
         end
       end
     end

@@ -79,4 +79,10 @@ class V1::UsersController < ApplicationController
       end
     }
   end
+
+  def sync
+    SyncJob.perform_later(SyncJob::SyncType::USER, current_user.id)
+
+    head :ok
+  end
 end
