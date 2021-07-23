@@ -13,7 +13,7 @@ module Travis
             @server_provider.users.each do |user|
               connection = Travis::VcsProxy::P4Connection.new(@server_provider, user, user.server_provider_permission(@server_provider.id).setting.token)
               repos = connection.repositories.map do |repository|
-                repo = @server_provider.repositories.first_or_initialize(name: repository[:name])
+                repo = @server_provider.repositories.find_or_initialize_by(name: repository[:name])
                 unless repo.persisted?
                   repo.url = 'STUB'
                   repo.save!

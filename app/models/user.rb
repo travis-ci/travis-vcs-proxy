@@ -26,7 +26,7 @@ class User < ApplicationRecord
   end
 
   def set_server_provider_permission(server_provider_id, permission)
-    perm = server_provider_permissions.first_or_initialize(server_provider_id: server_provider_id)
+    perm = server_provider_permissions.find_or_initialize_by(server_provider_id: server_provider_id)
     perm.permission = permission
     perm.save
   end

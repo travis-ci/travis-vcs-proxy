@@ -69,7 +69,7 @@ class V1::ServerProvidersController < ApplicationController
 
     success = true
     ActiveRecord::Base.transaction do
-      permission = current_user.server_provider_permissions.first_or_initialize(server_provider_id: @server_provider.id)
+      permission = current_user.server_provider_permissions.find_or_initialize_by(server_provider_id: @server_provider.id)
       unless permission.persisted?
         permission.permission = ServerProviderPermission::MEMBER
         unless permission.save
