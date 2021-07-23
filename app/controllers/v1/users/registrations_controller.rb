@@ -23,6 +23,8 @@ class V1::Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def destroy
+    render json: { errors: [ 'Invalid credentials' ] }, status: :unprocessable_entity and return unless resource.valid_password?(params[:password])
+
     resource.mark_as_deleted
     sign_out
     head :ok
