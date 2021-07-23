@@ -41,6 +41,10 @@ Rails.application.routes.draw do
     end
 
     resources :server_providers, only: [:create, :show, :update] do
+      collection do
+        get :by_url
+      end
+
       member do
         post :authenticate
         post :forget

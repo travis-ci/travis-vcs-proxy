@@ -116,6 +116,12 @@ class V1::ServerProvidersController < ApplicationController
     render json: @server_provider.repositories.map { |repository| presented_entity(:repository, repository) }
   end
 
+  def by_url
+    head :bad_request and return if params[:url].blank?
+
+    render json: presented_entity(:server_provider, ServerProvider.find_by!(url: params[:url]))
+  end
+
   private
 
   def server_provider_params
