@@ -12,15 +12,15 @@ class V1::ServerProvidersController < ApplicationController
     head :bad_request and return if params[:server_provider].blank? || !PROVIDER_KLASS.has_key?(params[:server_provider][:type])
 
     klass = PROVIDER_KLASS[params[:server_provider][:type]]
+    render json: { errors: [ 'A server with this URL already exists.' ] }, status: :unprocessable_entity and return if klass.find_by(url: params[:server_provider][:url]).present?
+
     errors = []
     provider = nil
     ActiveRecord::Base.transaction do
-      unless provider = klass.find_by(url: params[:server_provider][:url])
-        provider = klass.new(server_provider_params)
-        unless provider.save
-          errors = provider.errors
-          raise ActiveRecord::Rollback
-        end
+      provider = klass.new(server_provider_params)
+      unless provider.save
+        errors = provider.errors
+        raise ActiveRecord::Rollback
       end
 
       set_provider_credentials(provider, errors)
