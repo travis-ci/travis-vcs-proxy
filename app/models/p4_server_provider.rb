@@ -2,4 +2,5 @@
 
 class P4ServerProvider < ServerProvider
   include P4HostSettings
+  include EncryptedToken
 end

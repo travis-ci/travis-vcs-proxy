@@ -137,9 +137,8 @@ class V1::ServerProvidersController < ApplicationController
       raise ActiveRecord::Rollback
     end
 
-    settings = provider.settings(:p4_host)
-    settings.username = params[:server_provider][:username]
-    settings.token = params[:server_provider][:token]
+    provider.settings(:p4_host).username = params[:server_provider][:username]
+    provider.token = params[:server_provider][:token]
     unless provider.save
       success = false
       errors << 'Cannot save credentials'

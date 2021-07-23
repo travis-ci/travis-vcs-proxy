@@ -24,9 +24,8 @@ class V1::RepositoriesController < ApplicationController
       render json: { errors: [ 'Cannot authenticate' ] }, status: :unprocessable_entity and return
     end
 
-    settings = permission.settings(:p4_host)
-    settings.username = params[:username]
-    settings.token = params[:token]
+    permission.settings(:p4_host).username = params[:username]
+    permission.token = params[:token]
     head :ok and return if permission.save
 
     render json: { errors: permission.errors }, status: :unprocessable_entity

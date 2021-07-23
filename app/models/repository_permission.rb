@@ -2,6 +2,7 @@
 
 class RepositoryPermission < ApplicationRecord
   include P4HostSettings
+  include EncryptedToken
 
   belongs_to :repository
   belongs_to :user

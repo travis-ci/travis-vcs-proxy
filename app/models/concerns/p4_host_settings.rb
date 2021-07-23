@@ -7,5 +7,16 @@ module P4HostSettings
     has_settings(persistent: true) do |s|
       s.key :p4_host, defaults: { username: '', token: '' }
     end
+
+    def token=(token_value)
+      settings(:p4_host).token = encrypted_token(token_value)
+    end
+
+    def token
+      tok = settings(:p4_host).token
+      return tok if tok.blank?
+
+      decrypted_token(tok)
+    end
   end
 end
