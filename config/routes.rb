@@ -54,7 +54,7 @@ Rails.application.routes.draw do
       resources :branches, controller: 'repositories/branches', only: [:index, :show]
       resources :token, controller: 'repositories/token', only: [] do
         collection do
-          patch :set
+          patch :update
           delete :destroy
         end
       end

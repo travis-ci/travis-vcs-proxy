@@ -4,7 +4,7 @@ class V1::Repositories::TokenController < ApplicationController
   before_action :require_authentication
   before_action :set_repository
 
-  def set
+  def update
     head :bad_request and return if params[:username].blank? || params[:token].blank?
 
     permission = current_user.repository_permission(@repository.id)
