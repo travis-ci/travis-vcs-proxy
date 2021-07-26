@@ -17,7 +17,7 @@ class V1::RepositoriesController < ApplicationController
 
     connection = Travis::VcsProxy::P4Connection.new(@repository.server_provider.url, @repository.server_provider.settings(:p4_host).username, @repository.server_provider.token)
 
-    result = connection.file_contents(@repository.name, params[:path], params[:ref].presence)
+    result = connection.file_contents(@repository.name, params[:ref], params[:path])
     render json: { errors: [ 'Cannot render file' ] }, status: :unprocessable_entity and return if result.blank?
 
     render plain: result[1]
