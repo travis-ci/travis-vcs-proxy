@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 class V1::ServerProvidersController < ApplicationController
-  PROVIDER_KLASS = {
-    'perforce' => P4ServerProvider
-  }.freeze
+  include PaginatedCollection
 
   before_action :require_authentication
   before_action :set_server_provider, only: [:show, :update, :authenticate, :forget, :repositories, :sync]
@@ -31,19 +29,13 @@ class V1::ServerProvidersController < ApplicationController
       end
     end
 
-    data = presented_entity(:server_provider, provider)
-    data[:type] = PROVIDER_KLASS.invert[data[:type].constantize]
-
-    render json: data and return if errors.blank?
+    render json: presented_entity(:server_provider, provider) and return if errors.blank?
 
     render json: { errors: errors }, status: :unprocessable_entity
   end
 
   def show
-    data = presented_entity(:server_provider, @server_provider)
-    data[:type] = PROVIDER_KLASS.invert[data[:type].constantize]
-
-    render json: data
+    render json: presented_entity(:server_provider, @server_provider)
   end
 
   def update
@@ -113,7 +105,12 @@ class V1::ServerProvidersController < ApplicationController
   end
 
   def repositories
-    render json: @server_provider.repositories.map { |repository| presented_entity(:repository, repository) }
+    order = params[:sort_by] == 'last_synced_at' ? 'DESC' : 'ASC'
+    repositories = @server_provider.repositories.order(params[:sort_by] => order)
+    unless params[:filter].empty?
+      repositories = repositories.where('name LIKE ?', "%#{params[:filter]}%")
+    end
+    render json: paginated_collection(:repositories, :repository, repositories.page(params[:page]).per(params[:limit]))
   end
 
   def by_url

@@ -16,7 +16,7 @@ class ApplicationController < ActionController::API
   end
 
   def presented_entity(resource_name, resource)
-    "#{resource_name.to_s.classify}Serializer".constantize.new(resource).to_h
+    "#{resource_name.to_s.classify}Serializer".constantize.new(resource, { params: { current_user: current_user } }).to_h
   end
 
   def current_user_jwt_token

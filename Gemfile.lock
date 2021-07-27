@@ -141,6 +141,18 @@ GEM
     jsonapi-serializer (2.2.0)
       activesupport (>= 4.2)
     jwt (2.2.3)
+    kaminari (1.2.1)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.2.1)
+      kaminari-activerecord (= 1.2.1)
+      kaminari-core (= 1.2.1)
+    kaminari-actionview (1.2.1)
+      actionview
+      kaminari-core (= 1.2.1)
+    kaminari-activerecord (1.2.1)
+      activerecord
+      kaminari-core (= 1.2.1)
+    kaminari-core (1.2.1)
     ledermann-rails-settings (2.5.0)
       activerecord (>= 4.2)
     listen (3.5.1)
@@ -282,6 +294,7 @@ DEPENDENCIES
   devise-two-factor
   factory_bot
   jsonapi-serializer
+  kaminari
   ledermann-rails-settings
   listen
   p4ruby

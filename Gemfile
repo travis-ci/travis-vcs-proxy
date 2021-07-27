@@ -16,6 +16,7 @@ gem 'config'
 gem 'jsonapi-serializer'
 gem 'p4ruby'
 gem 'sidekiq'
+gem 'kaminari'
 
 gem 'bootsnap', require: false
 

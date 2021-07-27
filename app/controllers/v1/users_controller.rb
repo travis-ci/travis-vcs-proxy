@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class V1::UsersController < ApplicationController
+  include PaginatedCollection
+
   before_action :require_authentication, except: [:request_password_reset, :reset_password]
   skip_before_action :require_2fa, only: [:show, :request_password_reset, :reset_password]
 
@@ -69,15 +71,9 @@ class V1::UsersController < ApplicationController
   end
 
   def server_providers
-    render json: {
-      server_providers: current_user.server_providers.includes(:server_provider_permissions).map do |server_provider|
-        {
-          id: server_provider.id,
-          name: server_provider.name,
-          permission: current_user.server_provider_permission(server_provider.id).permission
-        }
-      end
-    }
+    server_providers = current_user.server_providers.includes(:server_provider_permissions).page(params[:page]).per(params[:limit])
+
+    render json: paginated_collection(:server_providers, :server_provider, server_providers)
   end
 
   def repositories
