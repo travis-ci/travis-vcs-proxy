@@ -36,7 +36,7 @@ class V1::Repositories::TokenController < ApplicationController
 
   private
 
-  def get_repository
+  def set_repository
     @repository = current_user.repositories.find_by(id: params[:repository_id])
   end
 end

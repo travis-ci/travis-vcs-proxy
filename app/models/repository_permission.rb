@@ -5,4 +5,8 @@ class RepositoryPermission < ApplicationRecord
   belongs_to :user
 
   enum permission: [ :read, :write, :admin, :super ]
+
+  def owner?
+    admin? || super?
+  end
 end
