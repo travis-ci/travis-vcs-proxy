@@ -3,7 +3,7 @@
 class RepositorySerializer < ApplicationSerializer
   attributes :id, :name, :url, :token, :last_synced_at, :server_provider_id
 
-  attributes(:permission) do |repo, params|
-    params[:current_user].repository_permission(repo.id).permission
+  attributes(:permission) do |repo|
+    repo.repository_permissions&.first&.permission
   end
 end

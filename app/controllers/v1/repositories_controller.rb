@@ -32,6 +32,6 @@ class V1::RepositoriesController < ApplicationController
   private
 
   def set_repository
-    @repository = current_user.repositories.find(params[:id])
+    @repository = current_user.repositories.includes(:repository_permissions).find(params[:id])
   end
 end

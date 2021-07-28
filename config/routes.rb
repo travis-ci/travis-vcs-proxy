@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     resources :server_providers, only: [:create, :show, :update] do
       collection do
         get :by_url
+        post :add_by_url
       end
 
       member do

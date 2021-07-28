@@ -6,6 +6,10 @@ class V1::ServerProvidersController < ApplicationController
   before_action :require_authentication
   before_action :set_server_provider, only: [:show, :update, :authenticate, :forget, :repositories, :sync]
 
+  PROVIDER_KLASS = {
+    'perforce' => P4ServerProvider
+  }.freeze
+
   def create
     head :bad_request and return if params[:server_provider].blank? || !PROVIDER_KLASS.has_key?(params[:server_provider][:type])
 
@@ -106,10 +110,14 @@ class V1::ServerProvidersController < ApplicationController
 
   def repositories
     order = params[:sort_by] == 'last_synced_at' ? 'DESC' : 'ASC'
-    repositories = @server_provider.repositories.order(params[:sort_by] => order)
+    repositories = @server_provider.repositories
+      .includes(:repository_permissions)
+      .includes(:setting_objects)
+      .order(params[:sort_by] => order)
     unless params[:filter].empty?
       repositories = repositories.where('name LIKE ?', "%#{params[:filter]}%")
     end
+
     render json: paginated_collection(:repositories, :repository, repositories.page(params[:page]).per(params[:limit]))
   end
 
@@ -119,6 +127,22 @@ class V1::ServerProvidersController < ApplicationController
     render json: presented_entity(:server_provider, ServerProvider.find_by!(url: params[:url]))
   end
 
+  def add_by_url
+    head :bad_request and return if params[:url].blank?
+
+    errors = []
+    provider = ServerProvider.find_by!(url: params[:url])
+
+    unless current_user.set_server_provider_permission(provider.id, ServerProviderPermission::MEMBER)
+      errors << 'Cannot set permission for user'
+      raise ActiveRecord::Rollback
+    end
+
+    render json: presented_entity(:server_provider, provider) and return if errors.blank?
+
+    render json: { errors: errors }, status: :unprocessable_entity
+  end
+
   private
 
   def server_provider_params
@@ -126,7 +150,7 @@ class V1::ServerProvidersController < ApplicationController
   end
 
   def set_server_provider
-    @server_provider = ServerProvider.find(params[:id])
+    @server_provider = ServerProvider.includes(:server_provider_permissions).find(params[:id])
   end
 
   def set_provider_credentials(provider, errors)

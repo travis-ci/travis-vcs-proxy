@@ -71,7 +71,12 @@ class V1::UsersController < ApplicationController
   end
 
   def server_providers
-    server_providers = current_user.server_providers.includes(:server_provider_permissions).page(params[:page]).per(params[:limit])
+    server_providers = current_user.server_providers
+      .includes(:server_provider_permissions)
+      .includes(:setting_objects)
+      .order(:name)
+      .page(params[:page])
+      .per(params[:limit])
 
     render json: paginated_collection(:server_providers, :server_provider, server_providers)
   end
