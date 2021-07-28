@@ -25,6 +25,11 @@ class V1::Users::RegistrationsController < Devise::RegistrationsController
   def destroy
     render json: { errors: [ 'Invalid credentials' ] }, status: :unprocessable_entity and return unless resource.valid_password?(params[:password])
 
+    if params[:feedback].present?
+      permitted = params.require(:feedback).permit(:reason, :text)
+      FeedbackMailer.with(email: resource.email, feedback: permitted).send_feedback.deliver_now
+    end
+
     resource.mark_as_deleted
     sign_out
     head :ok

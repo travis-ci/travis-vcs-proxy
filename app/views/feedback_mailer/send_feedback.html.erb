@@ -1,0 +1,20 @@
+The account <%= @email %> was removed.
+<br><br>
+<% if @feedback[:reason].present? %>
+The reason was <%= @feedback[:reason] %>
+<% end -%>
+<br><br>
+<% if @feedback[:text].present? %>
+The customer provided the following feedback:
+  <br><br>
+---
+<%= @feedback[:text] %>
+---
+
+<% else %>
+The customer provided no further feedback.
+<% end %>
+<br><br>
+Best regards,
+<br>
+Your Travis CI VCS Proxy Bot
