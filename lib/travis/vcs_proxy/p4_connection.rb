@@ -65,6 +65,22 @@ module Travis
         p4.run_print("//#{repository_name}/#{ref}/#{path}")
       rescue P4Exception => e
         puts e.message.inspect
+
+        nil
+      end
+
+      def commit_info(change_root, username)
+        matches = change_root.match(/\A\/\/([^\/]+)\/([^\/]+)/)
+        return if matches.nil?
+
+        {
+          repository_name: matches[1],
+          ref: matches[2],
+          email: p4.run_user('-o', username).first['Email'].encode('utf-8'),
+        }
+      rescue P4Exception => e
+        puts e.message.inspect
+
         nil
       end
 

@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   root to: 'home#index'
 
+  post :listener, to: 'v1/webhooks#receive'
+
   scope :v1, module: :v1 do
     devise_for :users,
       controllers: {

@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 class Ref < ApplicationRecord
-  BRANCH = 1
-  TAG = 2
+  enum type: [:branch, :tag]
 
   self.inheritance_column = nil
 
   belongs_to :repository
 
+  has_many :commits, dependent: :destroy
+
   validates_presence_of :name, :type, :repository_id
 
-  scope :branch, -> { where(type: BRANCH) }
-  scope :tag, -> { where(type: TAG) }
+  scope :branch, -> { where(type: types[:branch]) }
+  scope :tag, -> { where(type: types[:tag]) }
 end
