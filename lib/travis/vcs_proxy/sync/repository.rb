@@ -21,13 +21,11 @@ module Travis
           end
           return if username.blank? || token.blank?
 
-          connection = Travis::VcsProxy::P4Connection.new(@repository.server_provider.url, username, token)
-          connection.branches(@repository.name).each do |branch|
-            @repository.refs.find_or_create_by!(type: Ref::BRANCH, name: branch[:name].sub(/\A\/\/#{Regexp.escape(@repository.name)}\//, ''))
+          @repository.repo.branches.each do |branch|
+            @repository.branches.find_or_create_by!(name: branch[:name].sub(/\A\/\/#{Regexp.escape(@repository.name)}\//, ''))
           end
 
-          perms = connection.permissions(@repository.name)
-          Sidekiq.logger.debug "PERMS: #{perms.inspect}"
+          perms = @repository.repo.permissions
           return if perms.blank?
           repo_emails = perms.keys
           users = ::User.where(email: repo_emails).group_by(&:email)

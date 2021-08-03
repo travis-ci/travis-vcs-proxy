@@ -14,6 +14,18 @@ class ServerProvider < ApplicationRecord
 
   before_save :generate_listener_token
 
+  def bare_repo(*args)
+    raise NotImplementedError
+  end
+
+  def remote_repositories
+    raise NotImplementedError
+  end
+
+  def commit_info_from_webhook(payload)
+    raise NotImplementedError
+  end
+
   private
 
   def generate_listener_token

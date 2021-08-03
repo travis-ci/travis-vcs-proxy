@@ -75,17 +75,7 @@ class V1::ServerProvidersController < ApplicationController
         end
       end
 
-      begin
-        ValidateP4Credentials.new(params[:username], params[:token], @server_provider.url).call
-      rescue ValidateP4Credentials::ValidationFailed => e
-        success = false
-        raise ActiveRecord::Rollback
-      end
-
-      setting = permission.setting || permission.build_setting
-      setting.token = params[:token]
-      setting.username = params[:username]
-      unless setting.save
+      unless AuthenticateUserWithServerProvider.new(permission, @server_provider, params[:username], params[:token]).call
         success = false
         raise ActiveRecord::Rollback
       end
@@ -156,18 +146,15 @@ class V1::ServerProvidersController < ApplicationController
   def set_provider_credentials(provider, errors)
     return if params[:server_provider][:username].blank? || params[:server_provider][:token].blank?
 
+    success = false
     begin
-      ValidateP4Credentials.new(params[:server_provider][:username], params[:server_provider][:token], provider.url).call
-    rescue ValidateP4Credentials::ValidationFailed => e
-      success = false
+      success = UpdateRepositoryCredentials.new(provider, params[:server_provider][:username], params[:server_provider][:token])
+    rescue UpdateRepositoryCredentials::ValidationFailed => e
       errors << 'Cannot authenticate'
       raise ActiveRecord::Rollback
     end
 
-    provider.settings(:p4_host).username = params[:server_provider][:username]
-    provider.token = params[:server_provider][:token]
-    unless provider.save
-      success = false
+    unless success
       errors << 'Cannot save credentials'
       raise ActiveRecord::Rollback
     end

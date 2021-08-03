@@ -15,9 +15,7 @@ class V1::RepositoriesController < ApplicationController
   def content
     head :bad_request and return if params[:ref].blank? || params[:path].blank?
 
-    connection = Travis::VcsProxy::P4Connection.new(@repository.server_provider.url, @repository.server_provider.settings(:p4_host).username, @repository.server_provider.token)
-
-    result = connection.file_contents(@repository.name, params[:ref], params[:path])
+    result = @repository.file_contents(params[:ref], params[:path])
     render json: { errors: [ 'Cannot render file' ] }, status: :unprocessable_entity and return if result.blank?
 
     render plain: result[1]

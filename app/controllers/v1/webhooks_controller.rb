@@ -4,8 +4,7 @@ class V1::WebhooksController < ApplicationController
   def receive
     head :unauthorized and return unless server_provider = ServerProvider.find_by(listener_token: params[:token])
 
-    connection = Travis::VcsProxy::P4Connection.new(server_provider.url, server_provider.settings(:p4_host).username, server_provider.token)
-    head :internal_server_error unless commit_info = connection.commit_info(params[:change_root], params[:username])
+    head :internal_server_error unless commit_info = server_provider.commit_info_from_webhook(params)
 
     # TODO: Figure out if we should really ignore the hook if there is no user with the given email
     head :ok and return unless user = server_provider.users.find_by(email: commit_info[:email])

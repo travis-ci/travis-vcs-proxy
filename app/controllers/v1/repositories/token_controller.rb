@@ -10,15 +10,14 @@ class V1::Repositories::TokenController < ApplicationController
     permission = current_user.repository_permission(@repository.id)
     head :forbidden and return if permission.blank? || (!permission.owner? && !permission.admin?)
 
+    success = false
     begin
-      ValidateP4Credentials.new(params[:username], params[:token], @repository.server_provider.url).call
-    rescue ValidateP4Credentials::ValidationFailed
+      success = UpdateRepositoryCredentials.new(@repository, params[:username], params[:token]).call
+    rescue UpdateRepositoryCredentials::ValidationFailed
       render json: { errors: [ 'Cannot authenticate' ] }, status: :unprocessable_entity and return
     end
 
-    @repository.settings(:p4_host).username = params[:username]
-    @repository.token = params[:token]
-    head :ok and return if @repository.save
+    head :ok and return if success
 
     render json: { errors: @repository.errors }, status: :unprocessable_entity
   end
@@ -27,9 +26,7 @@ class V1::Repositories::TokenController < ApplicationController
     permission = current_user.repository_permission(@repository.id)
     head :forbidden and return if permission.blank? || (!permission.owner? && !permission.admin?)
 
-    @repository.settings(:p4_host).username = nil
-    @repository.token = nil
-    head :ok and return if @repository.save
+    head :ok and return if UpdateRepositoryCredentials.new(@repository, nil, nil).call
 
     render json: { errors: @repository.errors }, status: :unprocessable_entity
   end

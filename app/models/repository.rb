@@ -20,4 +20,12 @@ class Repository < ApplicationRecord
   def tags
     refs.tag
   end
+
+  def repo
+    server_provider.bare_repo(self)
+  end
+
+  def file_contents(ref, path)
+    repo.file_contents(ref, path)
+  end
 end
