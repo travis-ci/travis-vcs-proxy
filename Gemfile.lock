@@ -92,6 +92,8 @@ GEM
       railties (< 6.2)
       rotp (~> 6.0)
     diff-lcs (1.4.4)
+    doorkeeper (5.5.2)
+      railties (>= 5)
     dry-auto_inject (0.8.0)
       dry-container (>= 0.3.4)
     dry-configurable (0.12.1)
@@ -179,6 +181,7 @@ GEM
     parser (3.0.1.1)
       ast (~> 2.4.1)
     pg (1.2.3)
+    public_suffix (4.0.6)
     puma (5.3.2)
       nio4r (~> 2.0)
     racc (1.5.2)
@@ -269,6 +272,9 @@ GEM
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (1.6.1)
+    validate_url (1.0.13)
+      activemodel (>= 3.0.0)
+      public_suffix
     warden (1.2.9)
       rack (>= 2.0.9)
     warden-jwt_auth (0.5.0)
@@ -292,6 +298,7 @@ DEPENDENCIES
   devise
   devise-jwt
   devise-two-factor
+  doorkeeper
   factory_bot
   jsonapi-serializer
   kaminari
@@ -308,6 +315,7 @@ DEPENDENCIES
   rubocop (~> 0.75.1)
   rubocop-rspec
   sidekiq
+  validate_url
 
 RUBY VERSION
    ruby 3.0.1p64

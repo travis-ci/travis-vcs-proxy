@@ -70,4 +70,6 @@ Rails.application.configure do
     address: 'mailhog',
     port: 1025,
   }
+
+  config.hosts.clear
 end

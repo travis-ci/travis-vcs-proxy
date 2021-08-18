@@ -26,6 +26,14 @@ class ServerProvider < ApplicationRecord
     raise NotImplementedError
   end
 
+  def provider_type
+    raise NotImplementedError
+  end
+
+  def default_branch
+    raise NotImplementedError
+  end
+
   private
 
   def generate_listener_token

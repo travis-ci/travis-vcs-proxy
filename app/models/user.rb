@@ -13,6 +13,16 @@ class User < ApplicationRecord
          jwt_revocation_strategy: self,
          otp_secret_encryption_key: Settings.otp_secret_encryption_key
 
+  has_many :access_grants,
+         class_name: 'Doorkeeper::AccessGrant',
+         foreign_key: :resource_owner_id,
+         dependent: :delete_all
+
+  has_many :access_tokens,
+         class_name: 'Doorkeeper::AccessToken',
+         foreign_key: :resource_owner_id,
+         dependent: :delete_all
+
   validate :password_complexity
 
   has_many :server_provider_permissions

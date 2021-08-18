@@ -17,6 +17,8 @@ class V1::WebhooksController < ApplicationController
     commit = ref.commits.find_by(sha: params[:sha]) || ref.commits.create(sha: params[:sha], repository: repository, user: user)
     head :unprocessable_entity and return unless commit
 
+    TriggerWebhooks.new(commit).call
+
     head :ok
   end
 end

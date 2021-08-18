@@ -27,4 +27,12 @@ class P4ServerProvider < ServerProvider
 
     bare_repo.commit_info(payload[:change_root], payload[:username])
   end
+
+  def provider_type
+    'perforce'
+  end
+
+  def default_branch
+    'master'
+  end
 end

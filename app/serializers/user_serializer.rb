@@ -5,4 +5,5 @@ class UserSerializer < ApplicationSerializer
   attribute(:login) { |user| user.email }
   attribute(:emails) { |user| [ user.email ] }
   attribute(:servers) { |user| user.server_providers.map(&:id) }
+  attribute(:uuid) { |user| user.id }
 end

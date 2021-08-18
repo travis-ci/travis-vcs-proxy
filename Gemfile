@@ -7,6 +7,7 @@ gem 'rails', '~> 6.1.3', '>= 6.1.3.2'
 gem 'devise'
 gem 'devise-jwt'
 gem 'devise-two-factor'
+gem 'doorkeeper'
 gem 'ledermann-rails-settings'
 gem 'pg'
 gem 'redis'
@@ -17,6 +18,7 @@ gem 'jsonapi-serializer'
 gem 'p4ruby'
 gem 'sidekiq'
 gem 'kaminari'
+gem 'validate_url'
 
 gem 'bootsnap', require: false
 

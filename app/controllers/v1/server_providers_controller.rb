@@ -27,7 +27,7 @@ class V1::ServerProvidersController < ApplicationController
 
       set_provider_credentials(provider, errors)
 
-      unless current_user.set_server_provider_permission(provider.id, ServerProviderPermission::OWNER)
+      unless current_user.set_server_provider_permission(provider.id, ServerProviderPermission.permissions[:owner])
         errors << 'Cannot set permission for user'
         raise ActiveRecord::Rollback
       end
@@ -68,7 +68,7 @@ class V1::ServerProvidersController < ApplicationController
     ActiveRecord::Base.transaction do
       permission = current_user.server_provider_permissions.find_or_initialize_by(server_provider_id: @server_provider.id)
       unless permission.persisted?
-        permission.permission = ServerProviderPermission::MEMBER
+        permission.permission = ServerProviderPermission.permissions[:member]
         unless permission.save
           success = false
           raise ActiveRecord::Rollback
@@ -101,10 +101,10 @@ class V1::ServerProvidersController < ApplicationController
   def repositories
     order = params[:sort_by] == 'last_synced_at' ? 'DESC' : 'ASC'
     repositories = @server_provider.repositories
-      .includes(:repository_permissions)
+      .includes(:permissions)
       .includes(:setting_objects)
-      .order(params[:sort_by] => order)
-    unless params[:filter].empty?
+    repositories = repositories.order(params[:sort_by] => order) if params[:sort_by].present?
+    if params[:filter].present?
       repositories = repositories.where('name LIKE ?', "%#{params[:filter]}%")
     end
 
@@ -123,7 +123,7 @@ class V1::ServerProvidersController < ApplicationController
     errors = []
     provider = ServerProvider.find_by!(url: params[:url])
 
-    unless current_user.set_server_provider_permission(provider.id, ServerProviderPermission::MEMBER)
+    unless current_user.set_server_provider_permission(provider.id, ServerProviderPermission.permissions[:member])
       errors << 'Cannot set permission for user'
       raise ActiveRecord::Rollback
     end

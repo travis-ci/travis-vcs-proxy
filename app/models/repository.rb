@@ -9,9 +9,10 @@ class Repository < ApplicationRecord
   validates_presence_of :name, :url, :server_provider_id
 
   has_many :refs, dependent: :destroy
-  has_many :repository_permissions
-  has_many :users, through: :repository_permissions
   has_many :permissions, class_name: 'RepositoryPermission', dependent: :delete_all
+  has_many :users, through: :permissions
+  has_many :commits, dependent: :destroy
+  has_many :webhooks, dependent: :destroy
 
   def branches
     refs.branch

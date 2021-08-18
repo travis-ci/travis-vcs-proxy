@@ -3,6 +3,12 @@ Rails.application.routes.draw do
 
   post :listener, to: 'v1/webhooks#receive'
 
+  scope :v1 do
+    use_doorkeeper do
+      skip_controllers :applications, :token_info
+    end
+  end
+
   scope :v1, module: :v1 do
     devise_for :users,
       controllers: {
@@ -61,6 +67,8 @@ Rails.application.routes.draw do
 
     resources :repositories, only: [:show] do
       resources :branches, controller: 'repositories/branches', only: [:index, :show]
+      resources :commits, controller: 'repositories/commits', only: [:index, :show]
+      resources :webhooks, controller: 'repositories/webhooks', only: [:index, :show, :create, :update]
       resources :token, controller: 'repositories/token', only: [] do
         collection do
           patch :update

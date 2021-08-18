@@ -53,6 +53,24 @@ module Travis
           []
         end
 
+        def commits(branch_name)
+          user_map = users.each_with_object({}) do |user, memo|
+            memo[user[:name]] = user[:email]
+          end
+          p4.run_changes('-l', "//#{@repository.name}/#{branch_name}/...").map do |change|
+            puts change.inspect
+            next unless email = user_map[change['user']]
+            next unless user = User.find_by(email: email)
+
+            {
+              sha: change['change'],
+              user: user,
+              message: change['desc'],
+              committed_at: Time.at(change['time'].to_i)
+            }
+          end
+        end
+
         def permissions
           @permissions ||= users.each_with_object({}) do |user, memo|
             memo[user[:email]] = p4.run_protects('-u', user[:name], '-M', "//#{@repository.name}/...").first['permMax']
