@@ -28,7 +28,8 @@ class ValidateP4Credentials
     p4.port = @url
     p4.user = @username
     p4.connect
-    p4.run_login
+    p4.run_trust('-y')
+    p4.run_protects
 
     nil
   rescue P4Exception => e

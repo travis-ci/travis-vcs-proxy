@@ -95,19 +95,29 @@ module Travis
           file.write(@token)
           file.close
 
+          ENV['P4TICKETS'] = file.path
+
           @p4 = ::P4.new
           @p4.charset = 'utf8'
           @p4.port = @url
           @p4.user = @username
           @p4.connect
-          @p4.run_login
+          @p4.run_trust('-y')
+          @p4.run_protects
 
           @p4
         rescue P4Exception => e
           puts e.message.inspect
           raise
         ensure
-          file.unlink if file
+          if file
+            begin
+              file.unlink
+              file.close
+            rescue
+            end
+          end
+
           ENV.delete('P4TICKETS')
         end
       end

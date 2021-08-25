@@ -24,7 +24,7 @@ class AuthenticateUserWithServerProvider
     end
 
     setting = @server_provider_permission.setting || @server_provider_permission.build_setting
-    setting.token = @token
+    setting.token = @password
     setting.username = @username
     setting.save
   end
