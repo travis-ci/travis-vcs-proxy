@@ -3,8 +3,8 @@ default: &default
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   host: <%= ENV['DB_HOST'] || 'localhost' %>
-  user: root
-  password: root
+  user: <%= ENV['DB_USER'] || 'root' %>
+  password: <%= ENV['DB_PASSWORD'] || 'root' %>
 
 development:
   <<: *default
@@ -16,4 +16,4 @@ test:
 
 production:
   <<: *default
-  database: travis_vcs_proxy_production
+  database: <%= ENV['DB_NAME'] || 'travis_vcs_proxy_production' %>
