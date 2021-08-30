@@ -5,3 +5,4 @@ p4_token_encryption_key: HTmcYwLgONSdedIPBrUcsVQjJjQkFZBE
 web_url: https://travis-vcs-proxy.travis-ci.org
 api_url: https://travis-vcs-proxy-api.travis-ci.org
 feedback_mail: 'cancellations@travis-ci.com'
+mail_from: test@example.com
