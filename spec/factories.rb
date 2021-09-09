@@ -19,6 +19,12 @@ FactoryBot.define do
     permission { :owner }
   end
 
+  factory :p4_server_provider, class: 'P4ServerProvider' do
+    name { 'TestP4Server' }
+    url { 'http://test.com/server' }
+    type { 'P4ServerProvider' }
+  end
+
   factory :repository do
     name { 'TestRepo' }
     url { 'http://test.com/repo' }
@@ -30,5 +36,11 @@ FactoryBot.define do
     association :user
     association :repository
     permission { :super }
+  end
+
+  factory :ref do
+    association :repository
+    name { 'TestRef' }
+    type { :branch }
   end
 end
