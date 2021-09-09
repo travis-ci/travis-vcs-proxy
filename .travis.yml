@@ -1,0 +1,26 @@
+language: ruby
+dist: xenial
+
+addons:
+  postgresql: 12.1
+
+rvm: 3.0.1
+
+env:
+  global:
+    - PATH=/snap/bin:$PATH
+
+cache: bundler
+
+jobs:
+  include:
+    - stage: "rubocop"
+      scripe: bundle exec rubocop
+    - stage: "rspec"
+      script: bundle exec rspec
+      before_install:
+        - "gem install bundler -v 2.1.4"
+      before_script:
+        - "RAILS_ENV=test bundle exec rake db:schema:load"
+      services:
+        - redis-server

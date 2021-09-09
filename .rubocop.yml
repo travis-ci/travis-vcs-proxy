@@ -1,0 +1,67 @@
+require:
+  - rubocop-rspec
+
+AllCops:
+  Exclude:
+    - vendor/**/*
+    - tmp/**/*
+    - lib/tasks/*
+    - bin/*
+    - rgloader/*
+  TargetRubyVersion: 2.6
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Exclude:
+    - config/initializers/*
+  Enabled: true
+  Max: 120
+
+Metrics/MethodLength:
+  CountComments: false
+  Max: 15
+  Exclude:
+    - spec/**/*.rb
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*.rb
+    - config/routes.rb
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+RSpec/DescribedClass:
+  EnforcedStyle: explicit
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/SubjectStub:
+  Enabled: false
+
+Lint/UnusedMethodArgument:
+  Enabled: false

@@ -75,6 +75,12 @@ GEM
       dry-validation (~> 1.0, >= 1.0.0)
     connection_pool (2.2.5)
     crass (1.0.6)
+    database_cleaner (2.0.1)
+      database_cleaner-active_record (~> 2.0.0)
+    database_cleaner-active_record (2.0.1)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     deep_merge (1.2.1)
     devise (4.8.0)
       bcrypt (~> 3.0)
@@ -295,6 +301,7 @@ DEPENDENCIES
   brakeman
   byebug
   config
+  database_cleaner
   devise
   devise-jwt
   devise-two-factor
