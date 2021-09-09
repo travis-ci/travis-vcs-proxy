@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FeedbackMailer < ApplicationMailer
   default from: 'from@example.com'
   layout 'mailer'

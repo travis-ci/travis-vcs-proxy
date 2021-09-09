@@ -1,38 +1,39 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '3.0.1'
 
-gem 'rails', '~> 6.1.3', '>= 6.1.3.2'
+gem 'bootsnap', require: false
+gem 'config'
 gem 'devise'
 gem 'devise-jwt'
 gem 'devise-two-factor'
 gem 'doorkeeper'
+gem 'jsonapi-serializer'
+gem 'kaminari'
 gem 'ledermann-rails-settings'
+gem 'p4ruby'
 gem 'pg'
-gem 'redis'
 gem 'puma', '~> 5.0'
 gem 'rack-cors'
-gem 'config'
-gem 'jsonapi-serializer'
-gem 'p4ruby'
+gem 'rails', '~> 6.1.3', '>= 6.1.3.2'
+gem 'redis'
 gem 'sidekiq'
-gem 'kaminari'
 gem 'validate_url'
-
-gem 'bootsnap', require: false
 
 group :development, :test do
   gem 'brakeman'
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'factory_bot'
-  gem 'rspec-rails'
   gem 'listen'
+  gem 'rspec-rails'
 end
 
 group :test do
-  gem 'rspec'
   gem 'database_cleaner'
+  gem 'rspec'
 end
 
 group :development do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PaginatedCollection
   extend ActiveSupport::Concern
 
@@ -12,14 +14,14 @@ module PaginatedCollection
       limit: limit,
       first: {
         limit: limit,
-        offset: 0
+        offset: 0,
       },
       last: {
         limit: limit,
-        offset: (collection.total_pages - 1) * limit
+        offset: (collection.total_pages - 1) * limit,
       },
       prev: nil,
-      next: nil
+      next: nil,
     }
     pagination[:prev] = { limit: limit, offset: (collection.prev_page - 1) * limit } if collection.prev_page
     pagination[:next] = { limit: limit, offset: collection.current_page * limit } if collection.next_page

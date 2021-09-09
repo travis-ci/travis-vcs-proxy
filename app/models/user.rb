@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
 
@@ -14,14 +16,14 @@ class User < ApplicationRecord
          otp_secret_encryption_key: Settings.otp_secret_encryption_key
 
   has_many :access_grants,
-         class_name: 'Doorkeeper::AccessGrant',
-         foreign_key: :resource_owner_id,
-         dependent: :delete_all
+           class_name: 'Doorkeeper::AccessGrant',
+           foreign_key: :resource_owner_id,
+           dependent: :delete_all
 
   has_many :access_tokens,
-         class_name: 'Doorkeeper::AccessToken',
-         foreign_key: :resource_owner_id,
-         dependent: :delete_all
+           class_name: 'Doorkeeper::AccessToken',
+           foreign_key: :resource_owner_id,
+           dependent: :delete_all
 
   validate :password_complexity
 
@@ -46,7 +48,7 @@ class User < ApplicationRecord
   end
 
   def mark_as_deleted
-    update_columns(email: "deleted_email_#{Kernel.rand(1000000000)}", name: nil, active: false)
+    update_columns(email: "deleted_email_#{Kernel.rand(1_000_000_000)}", name: nil, active: false)
   end
 
   private
@@ -54,6 +56,8 @@ class User < ApplicationRecord
   def password_complexity
     return if password.blank?
 
-    errors.add(:password, 'should contain a non-alphabet character (number or special character)') if password =~ /\A[A-Za-z]+\z/
+    return unless password =~ /\A[A-Za-z]+\z/
+
+    errors.add(:password, 'should contain a non-alphabet character (number or special character)')
   end
 end

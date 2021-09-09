@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'P4'
 
 class ServerProviderUserSetting < ApplicationRecord

@@ -19,7 +19,7 @@ class AuthenticateUserWithServerProvider
   def authenticate_p4
     begin
       ValidateP4Credentials.new(@username, @password, @server_provider.url).call
-    rescue ValidateP4Credentials::ValidationFailed => e
+    rescue ValidateP4Credentials::ValidationFailed
       return false
     end
 

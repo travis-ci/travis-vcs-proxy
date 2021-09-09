@@ -6,5 +6,5 @@ class ServerProviderPermission < ApplicationRecord
 
   has_one :setting, class_name: 'ServerProviderUserSetting', foreign_key: :server_provider_user_id, dependent: :delete
 
-  enum permission: [:owner, :member]
+  enum permission: %i[owner member]
 end

@@ -8,20 +8,24 @@ AllCops:
     - lib/tasks/*
     - bin/*
     - rgloader/*
-  TargetRubyVersion: 2.6
+    - db/*
+    - config/**/*
+    - spec/rails_helper.rb
+    - spec/spec_helper.rb    
+  TargetRubyVersion: 2.7
 
 Style/Documentation:
   Enabled: false
 
+Metrics/ClassLength:
+  Enabled: false
+
 Metrics/LineLength:
-  Exclude:
-    - config/initializers/*
-  Enabled: true
-  Max: 120
+  Enabled: false
 
 Metrics/MethodLength:
   CountComments: false
-  Max: 15
+  Max: 40
   Exclude:
     - spec/**/*.rb
 
@@ -30,11 +34,24 @@ Metrics/BlockLength:
     - spec/**/*.rb
     - config/routes.rb
 
+Metrics/AbcSize:
+  Enabled: false
+
 Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: comma
 
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: comma
+
+Style/StringLiterals:
+  Exclude:
+    - db/schema.rb
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Lint/AssignmentInCondition:
+  Enabled: false
 
 RSpec/DescribedClass:
   EnforcedStyle: explicit

@@ -5,4 +5,3 @@ class HomeController < ApplicationController
     head :ok
   end
 end
-

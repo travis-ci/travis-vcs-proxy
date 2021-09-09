@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'P4'
 
 class ValidateP4Credentials
@@ -33,13 +34,14 @@ class ValidateP4Credentials
 
     nil
   rescue P4Exception => e
-    raise ValidationFailed.new(e.message)
+    raise ValidationFailed, e.message
   ensure
     if file
       begin
         file.close
         file.unlink
-      rescue
+      rescue StandardError => e
+        puts e.message.inspect
       end
     end
 

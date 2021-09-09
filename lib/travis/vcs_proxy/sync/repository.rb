@@ -9,7 +9,7 @@ module Travis
           @user = user
         end
 
-        def sync
+        def sync # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           username = @repository.settings(:p4_host).username
           token = @repository.token
           if username.blank? || token.blank?
@@ -22,7 +22,7 @@ module Travis
           return if username.blank? || token.blank?
 
           @repository.repo.branches.each do |branch|
-            branch_name = branch[:name].sub(/\A\/\/#{Regexp.escape(@repository.name)}\//, '')
+            branch_name = branch[:name].sub(%r{\A//#{Regexp.escape(@repository.name)}/}, '')
             branch = @repository.branches.find_or_create_by!(name: branch_name)
 
             @repository.repo.commits(branch_name).each do |commit|
@@ -44,12 +44,13 @@ module Travis
             end
 
             perms.each do |email, permission|
-              next unless users.has_key?(email)
+              next unless users.key?(email)
+
               user = users[email].first
               perm = user.repository_permission(@repository.id)
               if permission == 'none'
                 perm&.delete
-                return
+                break
               end
 
               perm ||= user.repository_permissions.build(repository_id: @repository.id)

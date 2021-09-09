@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'P4'
 
 module Travis
@@ -17,7 +18,7 @@ module Travis
         def repositories
           @repositories ||= p4.run_depots.map do |depot|
             {
-              name: depot['name']
+              name: depot['name'],
             }
           end
         rescue P4Exception => e
@@ -29,7 +30,7 @@ module Travis
         def branches
           @branches ||= p4.run_streams("//#{@repository.name}/...").map do |stream|
             {
-              name: stream['Stream']
+              name: stream['Stream'],
             }
           end
         rescue P4Exception => e
@@ -44,7 +45,7 @@ module Travis
 
             {
               email: user['Email'],
-              name: user['User']
+              name: user['User'],
             }
           end.compact
         rescue P4Exception => e
@@ -66,7 +67,7 @@ module Travis
               sha: change['change'],
               user: user,
               message: change['desc'],
-              committed_at: Time.at(change['time'].to_i)
+              committed_at: Time.at(change['time'].to_i),
             }
           end
         end
@@ -90,7 +91,7 @@ module Travis
         end
 
         def commit_info(change_root, username)
-          matches = change_root.match(/\A\/\/([^\/]+)\/([^\/]+)/)
+          matches = change_root.match(%r{\A//([^/]+)/([^/]+)})
           return if matches.nil?
 
           {
@@ -132,7 +133,8 @@ module Travis
             begin
               file.unlink
               file.close
-            rescue
+            rescue StandardError => e
+              puts e.message.inspect
             end
           end
 

@@ -15,6 +15,7 @@ module Travis
 
             @server_provider.users.each do |user|
               next unless permission_setting = user.server_provider_permission(@server_provider.id).setting
+
               sync_repositories(@server_provider.remote_repositories(permission_setting.username, permission_setting.token))
             end
           end

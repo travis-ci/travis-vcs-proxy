@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class WebhookTriggerJob < ApplicationJob
   queue_as :default
 

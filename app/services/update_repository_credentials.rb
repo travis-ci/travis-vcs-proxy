@@ -9,7 +9,7 @@ class UpdateRepositoryCredentials
     @password = password
   end
 
-  def call
+  def call # rubocop:disable Metrics/CyclomaticComplexity
     server_provider = case @entity
                       when Repository then @entity.server_provider
                       when ServerProvider then @entity

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Ref < ApplicationRecord
-  enum type: [:branch, :tag]
+  enum type: %i[branch tag]
 
   self.inheritance_column = nil
 

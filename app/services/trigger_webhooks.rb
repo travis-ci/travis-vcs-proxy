@@ -12,13 +12,11 @@ class TriggerWebhooks
 
   def call
     @repository.webhooks.active.each do |webhook|
-      begin
-        process_webhook(webhook)
-      rescue => e
-        Rails.logger.error "An error happened while processing webhook id=#{webhook.id} name=#{webhook.name}: #{e.message}"
-        Rails.logger.error "Partial backtrace:"
-        Rails.logger.error(e.backtrace.first(20).join("\n"))
-      end
+      process_webhook(webhook)
+    rescue StandardError => e
+      Rails.logger.error "An error happened while processing webhook id=#{webhook.id} name=#{webhook.name}: #{e.message}"
+      Rails.logger.error 'Partial backtrace:'
+      Rails.logger.error(e.backtrace.first(20).join("\n"))
     end
   end
 
@@ -34,7 +32,7 @@ class TriggerWebhooks
       'Content-Type' => 'application/json'
     )
 
-    raise WebhookError.new("Request failed: code=#{res.code}, body=#{res.body}") unless res.is_a?(Net::HTTPSuccess)
+    raise WebhookError, "Request failed: code=#{res.code}, body=#{res.body}" unless res.is_a?(Net::HTTPSuccess)
   end
 
   def webhook_payload(webhook)

@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
   subject { FactoryBot.create(:user) }
 
   let(:server_provider) { FactoryBot.create(:server_provider) }
-  
-  context 'server_providers' do
+
+  context 'with server_providers' do
     let!(:server_provider_permission) { FactoryBot.create(:server_provider_permission, server_provider: server_provider, user: subject) }
 
     describe '#server_provider_permission' do
@@ -19,13 +21,13 @@ RSpec.describe User, type: :model do
     describe '#set_server_provider_permission' do
       it 'sets permissions for specified server provider' do
         subject.set_server_provider_permission(server_provider.id, :member)
-      
+
         expect(server_provider_permission.reload.permission).to eq('member')
       end
     end
   end
 
-  context 'repositories' do
+  context 'with repositories' do
     let(:repository) { FactoryBot.create(:repository, server_provider: server_provider) }
     let!(:repository_permission) { FactoryBot.create(:repository_permission, repository: repository, user: subject) }
 
