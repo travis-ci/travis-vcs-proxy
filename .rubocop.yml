@@ -11,7 +11,7 @@ AllCops:
     - db/*
     - config/**/*
     - spec/rails_helper.rb
-    - spec/spec_helper.rb    
+    - spec/spec_helper.rb
   TargetRubyVersion: 2.7
 
 Style/Documentation:
@@ -78,6 +78,9 @@ RSpec/NamedSubject:
   Enabled: false
 
 RSpec/SubjectStub:
+  Enabled: false
+
+RSpec/LetSetup:
   Enabled: false
 
 Lint/UnusedMethodArgument:

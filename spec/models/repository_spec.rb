@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Repository, type: :model do
-  let(:server_provider) { FactoryBot.create(:server_provider) }
-
   subject { FactoryBot.create(:repository, server_provider: server_provider) }
 
+  let(:server_provider) { FactoryBot.create(:server_provider) }
   let!(:branch_ref) { FactoryBot.create(:ref, name: 'BranchRef', repository: subject, type: :branch) }
   let!(:tag_ref) { FactoryBot.create(:ref, name: 'TagRef', repository: subject, type: :tag) }
 
@@ -15,7 +14,6 @@ RSpec.describe Repository, type: :model do
       expect(subject.branches).to include(branch_ref)
     end
   end
-
 
   describe '#tags' do
     it 'returns tag refs' do

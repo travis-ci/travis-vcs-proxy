@@ -43,4 +43,13 @@ FactoryBot.define do
     name { 'TestRef' }
     type { :branch }
   end
+
+  factory :commit do
+    association :ref
+    association :repository
+    association :user
+    sha { 'COMMIT_SHA' }
+    message { 'Commit Message' }
+    committed_at { '2021-09-01 00:00:00' }
+  end
 end

@@ -10,7 +10,7 @@ RSpec.describe P4ServerProvider, type: :model do
       let(:username) { 'username' }
       let(:password) { '1337PASSWORD' }
 
-      it 'it uses provided user and password to return bare repo' do
+      it 'uses provided user and password to return bare repo' do
         expect(Travis::VcsProxy::Repositories::P4).to receive(:new).with(nil, subject.url, username, password).and_call_original
 
         expect(subject.bare_repo(nil, username, password)).to be_instance_of(Travis::VcsProxy::Repositories::P4)
@@ -26,7 +26,7 @@ RSpec.describe P4ServerProvider, type: :model do
         repo.settings(:p4_host).username = username
       end
 
-      it 'it uses repo user and token to return bare repo' do
+      it 'uses repo user and token to return bare repo' do
         expect(Travis::VcsProxy::Repositories::P4).to receive(:new).with(repo, subject.url, username, token).and_call_original
 
         expect(subject.bare_repo(repo)).to be_instance_of(Travis::VcsProxy::Repositories::P4)
