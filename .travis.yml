@@ -1,4 +1,5 @@
 language: ruby
+os: linux
 dist: xenial
 
 addons:
@@ -15,12 +16,12 @@ cache: bundler
 jobs:
   include:
     - stage: "rubocop"
-      scripe: bundle exec rubocop
+      script: bundle exec rubocop
     - stage: "rspec"
       script: bundle exec rspec
       before_install:
         - "gem install bundler -v 2.1.4"
       before_script:
-        - "RAILS_ENV=test bundle exec rake db:schema:load"
+        - "RAILS_ENV=test bundle exec rake db:create"
       services:
-        - redis-server
+        - redis
