@@ -151,7 +151,7 @@ module V1
 
       success = false
       begin
-        success = UpdateRepositoryCredentials.new(provider, params[:server_provider][:username], params[:server_provider][:token])
+        success = UpdateRepositoryCredentials.new(provider, params[:server_provider][:username], params[:server_provider][:token]).call
       rescue UpdateRepositoryCredentials::ValidationFailed
         errors << 'Cannot authenticate'
         raise ActiveRecord::Rollback

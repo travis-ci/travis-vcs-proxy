@@ -30,7 +30,7 @@ module V1
 
       def codes
         codes = current_user.generate_otp_backup_codes!
-        render json: { errors: current_user.errors }, status: :unprocessable_entity unless current_user.save
+        render(json: { errors: current_user.errors }, status: :unprocessable_entity) && return unless current_user.save
 
         render json: { codes: codes }
       end

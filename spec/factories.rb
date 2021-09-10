@@ -5,6 +5,7 @@ FactoryBot.define do
     name { 'Bob Uncle' }
     email { 'bob@uncle.com' }
     password { 'TestPass#123' }
+    confirmed_at { Date.today }
   end
 
   factory :server_provider do
@@ -51,5 +52,14 @@ FactoryBot.define do
     sha { 'COMMIT_SHA' }
     message { 'Commit Message' }
     committed_at { '2021-09-01 00:00:00' }
+  end
+
+  factory :webhook do
+    association :repository
+    name { 'RepoWebHook' }
+    url { 'https://webhook.repo/' }
+    active { true }
+    insecure_ssl { false }
+    created_at { '2021-09-01 00:00:00' }
   end
 end

@@ -5,7 +5,7 @@ module V1
     def receive # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       head(:unauthorized) && return unless server_provider = ServerProvider.find_by(listener_token: params[:token])
 
-      head :internal_server_error unless commit_info = server_provider.commit_info_from_webhook(params)
+      head(:internal_server_error) && return unless commit_info = server_provider.commit_info_from_webhook(params)
 
       # TODO: Figure out if we should really ignore the hook if there is no user with the given email
       head(:ok) && return unless user = server_provider.users.find_by(email: commit_info[:email])

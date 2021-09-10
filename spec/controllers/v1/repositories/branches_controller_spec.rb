@@ -10,8 +10,7 @@ RSpec.describe V1::Repositories::BranchesController, type: :controller do
   let!(:branch_ref) { FactoryBot.create(:ref, name: 'BranchRef', repository: repository, type: :branch) }
 
   before do
-    allow_any_instance_of(ApplicationController).to receive(:user_signed_in?).and_return(true)
-    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+    sign_in(user)
   end
 
   describe 'GET index' do

@@ -7,8 +7,8 @@ class ServerProviderSerializer < ApplicationSerializer
 
   PERMISSION = {
     nil => '',
-    1 => 'Owner',
-    2 => 'User',
+    'owner' => 'Owner',
+    'member' => 'User',
   }.freeze
 
   attributes :id, :name, :url

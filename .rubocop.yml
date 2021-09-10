@@ -83,5 +83,8 @@ RSpec/SubjectStub:
 RSpec/LetSetup:
   Enabled: false
 
+RSpec/InstanceVariable:
+  Enabled: false
+
 Lint/UnusedMethodArgument:
   Enabled: false

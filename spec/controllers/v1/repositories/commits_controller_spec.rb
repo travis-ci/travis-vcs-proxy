@@ -11,8 +11,7 @@ RSpec.describe V1::Repositories::CommitsController, type: :controller do
   let!(:commit) { FactoryBot.create(:commit, ref: branch_ref, repository: repository, user: user) }
 
   before do
-    allow_any_instance_of(ApplicationController).to receive(:user_signed_in?).and_return(true)
-    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+    sign_in(user)
   end
 
   describe 'GET index' do
