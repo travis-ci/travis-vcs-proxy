@@ -9,7 +9,7 @@ module Travis
           @user = user
         end
 
-        def sync # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        def sync # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
           username = @repository.settings(:p4_host).username
           token = @repository.token
           if username.blank? || token.blank?
