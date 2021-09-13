@@ -23,9 +23,15 @@ RSpec.describe Repository, type: :model do
 
   describe '#repo' do
     it 'returns bare repo' do
-      expect(server_provider).to receive(:bare_repo).with(subject)
+      expect(server_provider).to receive(:bare_repo).with(subject, nil, nil)
 
       subject.repo
+    end
+
+    it 'authorizes and returns bare repo' do
+      expect(server_provider).to receive(:bare_repo).with(subject, 'test', 'token')
+
+      subject.repo('test', 'token')
     end
   end
 
