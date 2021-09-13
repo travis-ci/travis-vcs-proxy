@@ -124,17 +124,6 @@ module Travis
         rescue P4Exception => e
           puts e.message.inspect
           raise
-        ensure
-          if file
-            begin
-              file.unlink
-              file.close
-            rescue StandardError => e
-              puts e.message.inspect
-            end
-          end
-
-          ENV.delete('P4TICKETS')
         end
       end
     end

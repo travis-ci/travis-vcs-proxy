@@ -31,16 +31,5 @@ class ValidateP4Credentials
     nil
   rescue P4Exception => e
     raise ValidationFailed, e.message
-  ensure
-    if file
-      begin
-        file.close
-        file.unlink
-      rescue StandardError => e
-        puts e.message.inspect
-      end
-    end
-
-    ENV.delete('P4TICKETS')
   end
 end
