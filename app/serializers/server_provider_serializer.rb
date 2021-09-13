@@ -14,10 +14,6 @@ class ServerProviderSerializer < ApplicationSerializer
   attributes :id, :name, :url
 
   attribute(:type) { |server| PROVIDER_KLASS[server.type.constantize] }
-  attribute(:username) do |server|
-    permission = server.server_provider_permissions&.first
-    setting = permission&.setting || permission&.build_setting
-    setting&.username || ''
-  end
+  attribute(:username) { |server| server.settings(:p4_host).username }
   attribute(:permission) { |server, _params| PERMISSION[server.server_provider_permissions&.first&.permission] }
 end
