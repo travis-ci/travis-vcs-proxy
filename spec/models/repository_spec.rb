@@ -41,7 +41,7 @@ RSpec.describe Repository, type: :model do
     let(:path) { 'path' }
 
     it 'returns file contents' do
-      expect(server_provider).to receive(:bare_repo).with(subject).and_return(bare_repo)
+      expect(server_provider).to receive(:bare_repo).with(subject, nil, nil).and_return(bare_repo)
       expect(bare_repo).to receive(:file_contents).with(ref, path)
 
       subject.file_contents(ref, path)
