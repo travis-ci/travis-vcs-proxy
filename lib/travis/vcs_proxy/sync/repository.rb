@@ -13,12 +13,17 @@ module Travis
           username = @repository.settings(:p4_host).username
           token = @repository.token
           if username.blank? || token.blank?
-            return unless server_provider_permission = @user.server_provider_permission(@repository.server_provider_id)
-            return unless server_provider_user_setting = server_provider_permission.setting
-
-            username = server_provider_user_setting.username
-            token = server_provider_user_setting.token
+            if server_provider_user_setting = @user.server_provider_permission(@repository.server_provider_id)&.setting
+              username = server_provider_user_setting.username
+              token = server_provider_user_setting.token
+            end
           end
+
+          if username.blank? || token.blank?
+            username = @repository.server_provider.settings(:p4_host).username
+            token = @repository.server_provider.token
+          end
+
           return if username.blank? || token.blank?
 
           repo = @repository.repo(username, token)
