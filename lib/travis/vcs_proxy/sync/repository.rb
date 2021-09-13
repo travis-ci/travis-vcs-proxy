@@ -21,18 +21,20 @@ module Travis
           end
           return if username.blank? || token.blank?
 
-          @repository.repo.branches.each do |branch|
+          repo = @repository.repo(username, token)
+
+          repo.branches.each do |branch|
             branch_name = branch[:name].sub(%r{\A//#{Regexp.escape(@repository.name)}/}, '')
             branch = @repository.branches.find_or_create_by!(name: branch_name)
 
-            @repository.repo.commits(branch_name).each do |commit|
+            repo.commits(branch_name).each do |commit|
               next if branch.commits.where(sha: commit[:sha]).exists?
 
               branch.commits.create!(commit.merge(repository_id: @repository.id))
             end
           end
 
-          perms = @repository.repo.permissions
+          perms = repo.permissions
           if perms.present?
             repo_emails = perms.keys
             users = ::User.where(email: repo_emails).group_by(&:email)

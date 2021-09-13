@@ -22,8 +22,8 @@ class Repository < ApplicationRecord
     refs.tag
   end
 
-  def repo
-    server_provider.bare_repo(self)
+  def repo(username = nil, token = nil)
+    server_provider.bare_repo(self, username, token)
   end
 
   def file_contents(ref, path)
