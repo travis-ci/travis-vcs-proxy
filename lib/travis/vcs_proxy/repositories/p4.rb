@@ -59,7 +59,6 @@ module Travis
             memo[user[:name]] = user[:email]
           end
           p4.run_changes('-l', "//#{@repository.name}/#{branch_name}/...").map do |change|
-            puts change.inspect
             next unless email = user_map[change['user']]
             next unless user = User.find_by(email: email)
 
@@ -69,7 +68,7 @@ module Travis
               message: change['desc'],
               committed_at: Time.at(change['time'].to_i),
             }
-          end
+          end.compact
         end
 
         def permissions
