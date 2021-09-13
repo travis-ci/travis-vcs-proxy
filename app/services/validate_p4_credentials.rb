@@ -18,16 +18,12 @@ class ValidateP4Credentials
   end
 
   def call
-    file = Tempfile.new('p4ticket')
-    file.write(@token)
-    file.close
-
-    ENV['P4TICKETS'] = file.path
-
     p4 = P4.new
     p4.charset = 'utf8'
     p4.port = @url
     p4.user = @username
+    p4.password = @token
+    p4.ticket_file = '/dev/null'
     p4.connect
     p4.run_trust('-y')
     p4.run_protects
