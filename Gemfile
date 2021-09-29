@@ -21,10 +21,10 @@ gem 'rack-cors'
 gem 'rails', '~> 6.1.3', '>= 6.1.3.2'
 gem 'redis'
 gem 'sidekiq'
-gem 'validate_url'
-gem 'sentry-ruby'
 gem 'sentry-rails'
+gem 'sentry-ruby'
 gem 'sentry-sidekiq'
+gem 'validate_url'
 
 group :development, :test do
   gem 'brakeman'

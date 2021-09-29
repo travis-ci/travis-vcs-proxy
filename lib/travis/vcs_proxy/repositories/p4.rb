@@ -73,11 +73,9 @@ module Travis
 
         def permissions
           @permissions ||= users.each_with_object({}) do |user, memo|
-            begin
-              memo[user[:email]] = p4.run_protects('-u', user[:name], '-M', "//#{@repository.name}/...").first['permMax']
-            rescue P4Exception => e
-              puts e.message.inspect
-            end
+            memo[user[:email]] = p4.run_protects('-u', user[:name], '-M', "//#{@repository.name}/...").first['permMax']
+          rescue P4Exception => e
+            puts e.message.inspect
           end
         end
 
