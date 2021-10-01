@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'securerandom'
 
 class TriggerWebhooks
   class WebhookError < StandardError; end
@@ -7,6 +8,7 @@ class TriggerWebhooks
     @commit = commit
     @ref = commit.ref
     @repository = @ref.repository
+    @user = commit.user
     @server_provider = @repository.server_provider
   end
 
@@ -29,7 +31,9 @@ class TriggerWebhooks
     res = Net::HTTP.post(
       uri,
       webhook_payload(webhook),
-      'Content-Type' => 'application/json'
+      'Content-Type' => 'application/json',
+      'X-Travisproxy-Event-Id' => SecureRandom.uuid,
+      'X-Request-Id' => SecureRandom.uuid
     )
 
     raise WebhookError, "Request failed: code=#{res.code}, body=#{res.body}" unless res.is_a?(Net::HTTPSuccess)
@@ -37,11 +41,32 @@ class TriggerWebhooks
 
   def webhook_payload(webhook)
     JSON.dump(
-      commit: {
-        sha: @commit.sha,
-        message: @commit.message,
-        committed_at: @commit.committed_at,
-      }
+      branch_name: 'main',
+      sender_id: @commit.user_id.to_s,
+      new_revision: @commit.sha,
+      sender_login: @user.email,
+      server_type: 'perforce',
+      owner_vcs_id: @server_provider.id.to_s,
+      sender_vcs_id: @commit.user_id.to_s,
+      repository: {
+        id: @repository.id.to_s,
+        name: @repository.name,
+        full_name: @repository.name,
+        slug: @repository.url,
+        is_private: true,
+
+      },
+      commits: [
+        {
+          id: @commit.id.to_s,
+          sha: @commit.sha,
+          revision: @commit.sha,
+          message: @commit.message || '',
+          committed_at: @commit.committed_at,
+          commiter_name: @user.name || '',
+          commiter_email: @user.email || '',
+        },
+      ]
     )
   end
 end
