@@ -71,6 +71,7 @@ Rails.application.routes.draw do
       resources :webhooks, controller: 'repositories/webhooks', only: [:index, :show, :create, :update]
       resources :token, controller: 'repositories/token', only: [] do
         collection do
+          get :get
           patch :update
           delete :destroy
         end

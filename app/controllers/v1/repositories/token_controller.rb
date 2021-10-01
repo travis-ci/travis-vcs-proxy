@@ -6,6 +6,13 @@ module V1
       before_action :require_authentication
       before_action :set_repository
 
+      def get
+        permission = current_user.repository_permission(@repository.id)
+        head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
+
+        render json: { token: @repository.decrypted_token(@repository.server_provider.settings(:p4_host).token) }
+      end
+
       def update # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         head(:bad_request) && return if params[:username].blank? || params[:token].blank?
 
