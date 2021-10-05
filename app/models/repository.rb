@@ -2,6 +2,7 @@
 
 class Repository < ApplicationRecord
   include P4HostSettings
+  include SvnHostSettings
   include EncryptedToken
 
   belongs_to :server_provider

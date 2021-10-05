@@ -345,6 +345,7 @@ DEPENDENCIES
   kaminari
   ledermann-rails-settings
   listen
+  nokogiri
   p4ruby
   pg
   puma (~> 5.0)

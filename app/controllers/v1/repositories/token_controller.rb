@@ -21,7 +21,7 @@ module V1
 
         success = false
         begin
-          success = UpdateRepositoryCredentials.new(@repository, params[:username], params[:token]).call
+          success = UpdateRepositoryCredentials.new(@repository, authentication_params).call
         rescue UpdateRepositoryCredentials::ValidationFailed
           render(json: { errors: ['Cannot authenticate'] }, status: :unprocessable_entity) && (return)
         end
@@ -35,12 +35,16 @@ module V1
         permission = current_user.repository_permission(@repository.id)
         head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
 
-        head(:ok) && return if UpdateRepositoryCredentials.new(@repository, nil, nil).call
+        head(:ok) && return if UpdateRepositoryCredentials.new(@repository, {}).call
 
         render json: { errors: @repository.errors }, status: :unprocessable_entity
       end
 
       private
+
+      def authentication_params
+        params.permit(:username, :token, :svn_realm)
+      end
 
       def set_repository
         @repository = current_user.repositories.find_by(id: params[:repository_id])

@@ -65,7 +65,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :repositories, only: [:show] do
+    resources :repositories, only: [:create, :show, :update] do
       resources :branches, controller: 'repositories/branches', only: [:index, :show]
       resources :commits, controller: 'repositories/commits', only: [:index, :show]
       resources :webhooks, controller: 'repositories/webhooks', only: [:index, :show, :create, :update]

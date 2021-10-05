@@ -1,8 +1,13 @@
 # frozen_string_literal: true
+
 require 'securerandom'
 
 class TriggerWebhooks
   class WebhookError < StandardError; end
+  PROVIDER_KLASS = {
+    P4ServerProvider => 'perforce',
+    SvnServerProvider => 'svn',
+  }.freeze
 
   def initialize(commit)
     @commit = commit
@@ -45,7 +50,7 @@ class TriggerWebhooks
       sender_id: @commit.user_id.to_s,
       new_revision: @commit.sha,
       sender_login: @user.email,
-      server_type: 'perforce',
+      server_type: server_type,
       owner_vcs_id: @server_provider.id.to_s,
       sender_vcs_id: @commit.user_id.to_s,
       repository: {
@@ -68,5 +73,9 @@ class TriggerWebhooks
         },
       ]
     )
+  end
+
+  def server_type
+    PROVIDER_KLASS[@server_provider.type]
   end
 end

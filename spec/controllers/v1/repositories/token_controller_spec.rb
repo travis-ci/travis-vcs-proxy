@@ -20,7 +20,7 @@ RSpec.describe V1::Repositories::TokenController, type: :controller do
 
     context 'when username and token are present and user has permission' do
       it 'updates the token' do
-        expect(UpdateRepositoryCredentials).to receive(:new).with(repository, username, token).and_call_original
+        expect(UpdateRepositoryCredentials).to receive(:new).with(repository, ActionController::Parameters.new(username: username, token: token).permit!).and_call_original
         expect_any_instance_of(UpdateRepositoryCredentials).to receive(:call).and_return(true)
 
         patch :update, params: { repository_id: repository.id, username: username, token: token }
@@ -29,7 +29,7 @@ RSpec.describe V1::Repositories::TokenController, type: :controller do
       end
 
       it 'returns error on unsuccessful update' do
-        expect(UpdateRepositoryCredentials).to receive(:new).with(repository, username, token).and_call_original
+        expect(UpdateRepositoryCredentials).to receive(:new).with(repository, ActionController::Parameters.new(username: username, token: token).permit!).and_call_original
         expect_any_instance_of(UpdateRepositoryCredentials).to receive(:call).and_return(false)
 
         patch :update, params: { repository_id: repository.id, username: username, token: token }
@@ -66,7 +66,7 @@ RSpec.describe V1::Repositories::TokenController, type: :controller do
   describe 'DELETE destroy' do
     context 'when username and token are present and user has permission' do
       it 'destroys the token' do
-        expect(UpdateRepositoryCredentials).to receive(:new).with(repository, nil, nil).and_call_original
+        expect(UpdateRepositoryCredentials).to receive(:new).with(repository, {}).and_call_original
         expect_any_instance_of(UpdateRepositoryCredentials).to receive(:call).and_return(true)
 
         delete :destroy, params: { repository_id: repository.id }
@@ -75,7 +75,7 @@ RSpec.describe V1::Repositories::TokenController, type: :controller do
       end
 
       it 'returns error on unsuccessful update' do
-        expect(UpdateRepositoryCredentials).to receive(:new).with(repository, nil, nil).and_call_original
+        expect(UpdateRepositoryCredentials).to receive(:new).with(repository, {}).and_call_original
         expect_any_instance_of(UpdateRepositoryCredentials).to receive(:call).and_return(false)
 
         delete :destroy, params: { repository_id: repository.id }

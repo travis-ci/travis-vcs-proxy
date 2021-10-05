@@ -9,6 +9,7 @@ module V1
 
     PROVIDER_KLASS = {
       'perforce' => P4ServerProvider,
+      'svn' => ::SvnServerProvider,
     }.freeze
 
     def create # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -80,7 +81,7 @@ module V1
           end
         end
 
-        unless AuthenticateUserWithServerProvider.new(permission, @server_provider, params[:username], params[:token]).call
+        unless AuthenticateUserWithServerProvider.new(permission, @server_provider, authentication_params).call
           success = false
           raise ActiveRecord::Rollback
         end
@@ -142,6 +143,14 @@ module V1
       params.require(:server_provider).permit(:name, :url)
     end
 
+    def authentication_params
+      params.permit(:username, :token, :svn_realm)
+    end
+
+    def server_provider_authentication_params
+      params.require(:server_provider).permit(:username, :token, :svn_realm)
+    end
+
     def set_server_provider
       @server_provider = ServerProvider.includes(:server_provider_permissions).find(params[:id])
     end
@@ -151,7 +160,7 @@ module V1
 
       success = false
       begin
-        success = UpdateRepositoryCredentials.new(provider, params[:server_provider][:username], params[:server_provider][:token]).call
+        success = UpdateRepositoryCredentials.new(provider, server_provider_authentication_params).call
       rescue UpdateRepositoryCredentials::ValidationFailed
         errors << 'Cannot authenticate'
         raise ActiveRecord::Rollback
