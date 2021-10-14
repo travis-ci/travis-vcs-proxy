@@ -60,6 +60,12 @@ module V1
         end
 
         set_provider_credentials(@server_provider, errors)
+
+        setting = permission.setting || permission.build_setting
+        setting.token = params[:server_provider][:token]
+        setting.username = params[:server_provider][:username]
+        setting.save
+
       end
 
       head(:ok) && return if errors.blank?
