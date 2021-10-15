@@ -10,10 +10,11 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
 RUN bundle config --global frozen 1
 RUN bundle config set deployment 'true'
 RUN bundle config set without 'development test'
-
+RUN cd / && curl --insecure https://ftp.perforce.com/perforce/r20.1/bin.linux26x86_64/p4api-glibc2.3-openssl1.1.1.tgz | tar xz
 WORKDIR /app
 COPY Gemfile* ./
 
+RUN bundle config --global build.p4ruby --with-p4api_dir=/p4api-2020.1.2187281
 RUN gem install bundler -v '2.1.4'
 RUN bundle install
 
