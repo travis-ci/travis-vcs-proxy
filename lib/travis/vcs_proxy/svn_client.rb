@@ -13,9 +13,9 @@ module Travis
 
         ssh_file = ::Tempfile.new('sshkey')
         ssh_file.write(@ssh_key)
-        ENV['SVN_SSH'] = "ssh -i #{ssh_file.path}"
+        ENV['SVN_SSH'] = "ssh -i #{ssh_file.path} -o StrictHostKeyChecking=no"
         if assembla?
-          ENV['SVN_SSH'] = "ssh -i #{ssh_file.path} -o SendEnv=REPO_NAME -l svn"
+          ENV['SVN_SSH'] = "ssh -i #{ssh_file.path} -o SendEnv=REPO_NAME -o StrictHostKeyChecking=no -l svn"
         end
         ssh_file.close
         ENV['REPO_NAME'] = repo

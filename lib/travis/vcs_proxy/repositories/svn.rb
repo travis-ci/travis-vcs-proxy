@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/helpers/svn_client'
 require 'nokogiri'
 
 module Travis
@@ -35,7 +34,7 @@ module Travis
         end
 
         def branches
-          @branches ||= svn.branches(@repository).map do |branch|
+          @branches ||= svn.branches(@repository.name).map do |branch|
             {
               name: branch,
             }
