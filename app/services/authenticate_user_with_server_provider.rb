@@ -39,9 +39,9 @@ class AuthenticateUserWithServerProvider
     end
 
     setting = @server_provider_permission.setting || @server_provider_permission.build_setting
-    setting.password = @password
+    setting.token = @password
     setting.username = @username
-    setting.svn_realm = @svn_realm
     setting.save
+    @server_provider.settings(:svn_host).svn_realm = @svn_realm
   end
 end
