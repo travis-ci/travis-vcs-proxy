@@ -10,7 +10,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
 RUN bundle config --global frozen 1
 RUN bundle config set deployment 'true'
 RUN bundle config set without 'development test'
-RUN cd / && curl --insecure https://ftp.perforce.com/perforce/r20.1/bin.linux26x86_64/p4api-glibc2.3-openssl1.1.1.tgz | tar xz
+RUN cd / && curl https://storage.googleapis.com/gatestxxx/p4api-glibc2.3-openssl1.1.1.tgz | tar xz
 WORKDIR /app
 COPY Gemfile* ./
 
