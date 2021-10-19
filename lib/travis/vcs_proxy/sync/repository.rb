@@ -5,12 +5,13 @@ module Travis
     module Sync
       class Repository
         def initialize(repository, user)
+          @host_type = repository.server_provider.host_type
           @repository = repository
           @user = user
         end
 
         def sync # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-          username = @repository.settings(:p4_host).username
+          username = @repository.settings(@host_type).username
           token = @repository.token
           if username.blank? || token.blank?
             if server_provider_user_setting = @user.server_provider_permission(@repository.server_provider_id)&.setting
@@ -20,7 +21,7 @@ module Travis
           end
 
           if username.blank? || token.blank?
-            username = @repository.server_provider.settings(:p4_host).username
+            username = @repository.server_provider.settings(@host_type).username
             token = @repository.server_provider.token
           end
 
@@ -47,7 +48,8 @@ module Travis
 
             # Remove users that don't have access anymore
             (db_emails - repo_emails).each do |email|
-              users[email].first.repository_permission(@repository.id).delete
+              u = users[email]&.first
+              u.repository_permission(@repository.id).delete if u
             end
 
             perms.each do |email, permission|

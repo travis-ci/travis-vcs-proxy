@@ -30,6 +30,10 @@ class ServerProvider < ApplicationRecord
     raise NotImplementedError
   end
 
+  def host_type
+    raise NotImplementedError
+  end
+
   def default_branch
     raise NotImplementedError
   end

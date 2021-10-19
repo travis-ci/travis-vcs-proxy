@@ -11,10 +11,7 @@ class SvnServerProvider < ServerProvider
       username = repository.settings(:svn_host).username
       repo_token = repository.token
     else
-      puts settings(:svn_host).inspect.to_s
       username = settings(:svn_host).username
-      puts "uname: #{username.inspect}"
-      puts "token: #{token.inspect}"
       repo_token = token
     end
 
@@ -33,6 +30,10 @@ class SvnServerProvider < ServerProvider
 
   def provider_type
     'svn'
+  end
+
+  def host_type
+    :svn_host
   end
 
   def default_branch

@@ -31,6 +31,10 @@ class P4ServerProvider < ServerProvider
   def provider_type
     'perforce'
   end
+  
+  def host_type
+    :p4_host
+  end
 
   def default_branch
     'master'

@@ -24,6 +24,9 @@ module V1
             raise ActiveRecord::Rollback
           end
         end
+        perm = current_user.repository_permissions.build(repository_id: @repository.id)
+        perm.permission = 'admin'
+        perm.save!
       end
 
       render json: presented_entity(:repository, @repository) && return if errors.blank?

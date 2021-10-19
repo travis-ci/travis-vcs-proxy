@@ -50,6 +50,11 @@ module Travis
         exec(repo, "log #{repository_path(repo)}/#{get_branch(branch)}/#{file} #{params}")
       end
 
+      def users(repo)
+        res = exec(repo, "log -q -r 1:HEAD #{repository_path(repo)} | grep '^r' | awk -F'|' '!x[$2]++{print$2}'")
+        res.split("\n")
+      end
+
       private
 
       def repository_path(repo)
@@ -62,8 +67,13 @@ module Travis
         return @url if @password
 
         u = URI(@url)
-        "svn+ssh://#{@username}@#{u.host}#{u.path}" unless assembla?
-        "svn+ssh://#{u.host}"
+        if u.port
+          "svn+ssh://#{@username}@#{u.host}:#{u.port}#{u.path}" unless assembla?
+          "svn+ssh://#{u.host}:#{u.port}"
+        else
+          "svn+ssh://#{@username}@#{u.host}#{u.path}" unless assembla?
+          "svn+ssh://#{u.host}"
+        end
       end
 
       def assembla?

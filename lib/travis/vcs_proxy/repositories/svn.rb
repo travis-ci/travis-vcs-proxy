@@ -22,13 +22,14 @@ module Travis
         end
 
         def repositories
-          @user = User.find_by(email: @username)
+          @user = User.find_by(name: @username)
           return [] unless @user
 
           @permissions = ::RepositoryPermission.where(user_id: @user.id)
           @repositories = []
           @permissions.each do |_perm|
-            @repositories |= ::Repository.find_by(id: @perm.repository_id) if @permissions.permission
+            repo = ::Repository.find_by(id: _perm.repository_id) if _perm.permission
+            @repositories.append(repo) if repo
           end
           @repositories
         end
@@ -42,12 +43,11 @@ module Travis
         end
 
         def users
-          @users ||= p4.run_users('-a').map do |user|
-            next unless user['Email'].include?('@')
+          @users ||= svn.users(@repository.name).map do |user|
 
             {
-              email: user['Email'],
-              name: user['User'],
+              email: user,
+              name: user,
             }
           end.compact
         rescue P4Exception => e
@@ -63,10 +63,10 @@ module Travis
           xml_res = svn.log(@repository.name, nil, branch: branch_name, format: 'xml')
           return [] unless xml_res
 
-          xml = Nokogiri::Xml(xml_res)
+          xml = Nokogiri::XML(xml_res)
           result = xml.at_xpath('log')&.map do |entry|
-            next unless email = user_map[entry.at_xpath('author')]
-            next unless user = User.find_by(email: email)
+            next unless uname = user_map[entry.at_xpath('author')]
+            next unless user = User.find_by(name: uname)
 
             {
               sha: entry.at_xpath('revision'),
@@ -80,9 +80,7 @@ module Travis
 
         def permissions
           @permissions ||= users.each_with_object({}) do |user, memo|
-            memo[user[:email]] = p4.run_protects('-u', user[:name], '-M', "//#{@repository.name}/...").first['permMax']
-          rescue P4Exception => e
-            puts e.message.inspect
+            memo[user[:email]] = 2
           end
         end
 
