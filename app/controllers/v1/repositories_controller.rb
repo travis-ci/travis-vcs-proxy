@@ -48,7 +48,7 @@ module V1
       result = @repository.file_contents(commit, params[:path])
       render(json: { errors: ['Cannot render file'] }, status: :unprocessable_entity) && return if result.blank?
 
-      render plain: result[1]
+      render plain: result
     end
 
     def sync
