@@ -18,7 +18,7 @@ module Travis
           @svn = SvnClient.new
           @svn.username = @username
           @svn.ssh_key = @token
-          @svn.url = "#{@url}#{repository.url}"
+          @svn.url = @url
         end
 
         def repositories
