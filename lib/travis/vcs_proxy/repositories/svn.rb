@@ -22,7 +22,7 @@ module Travis
         end
 
         def repositories
-          @user = User.find_by(name: @username)
+          @user = ServerProviderUserSetting.find_by(username: @username).permission.user
           return [] unless @user
 
           @permissions = ::RepositoryPermission.where(user_id: @user.id)
@@ -66,7 +66,10 @@ module Travis
           xml = Nokogiri::XML(xml_res)
           result = xml.at_xpath('log')&.children.map do |entry|
             next unless uname = user_map[entry.at_xpath('author')&.text]
-            next unless user = User.find_by(name: uname)
+            next unless uname != @repository.server_provider.settings(:svn_host).username
+
+            user = ServerProviderUserSetting.find_by(username: @repository.server_provider.settings(:svn_host).username).permission.user
+            next unless user
 
             {
               sha: entry.attribute('revision')&.value || '0',
