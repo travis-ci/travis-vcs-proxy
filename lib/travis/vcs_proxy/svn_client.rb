@@ -51,7 +51,7 @@ module Travis
       end
 
       def users(repo)
-        res = exec(repo, "log -q -r 1:HEAD #{repository_path(repo)} | grep '^r' | awk -F'|' '!x[$2]++{print$2}'")
+        res = exec(repo, "log -q -r 1:HEAD #{repository_path(repo)} | grep '^r' | awk -F'|' '!x[$2]++{print$2}' | tr -d ' '")
         res.split("\n")
       end
 

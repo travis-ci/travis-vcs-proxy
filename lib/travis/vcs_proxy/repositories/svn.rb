@@ -64,15 +64,15 @@ module Travis
           return [] unless xml_res
 
           xml = Nokogiri::XML(xml_res)
-          result = xml.at_xpath('log')&.map do |entry|
-            next unless uname = user_map[entry.at_xpath('author')]
+          result = xml.at_xpath('log')&.children.map do |entry|
+            next unless uname = user_map[entry.at_xpath('author')&.text]
             next unless user = User.find_by(name: uname)
 
             {
-              sha: entry.at_xpath('revision'),
+              sha: entry.attribute('revision')&.value || '0',
               user: user,
-              message: entry.at_xpath('msg'),
-              committed_at: Time.at(entry.at_xpath('date').to_i),
+              message: entry.at_xpath('msg')&.text,
+              committed_at: Time.at(entry.at_xpath('date').text.to_i),
             }
           end
           result&.compact
