@@ -13,4 +13,5 @@ class RepositorySerializer < ApplicationSerializer
   end
   attributes(:slug) { |repo| "#{repo.server_provider.name}/#{repo.name}" }
   attributes(:server_type) { |repo| repo.server_provider.provider_type }
+  attributes(:source_url) { |repo| repo.server_provider.url }
 end
