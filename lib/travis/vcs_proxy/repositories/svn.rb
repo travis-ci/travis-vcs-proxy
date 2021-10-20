@@ -18,7 +18,7 @@ module Travis
           @svn = SvnClient.new
           @svn.username = @username
           @svn.ssh_key = @token
-          @svn.url = @url
+          @svn.url = "#{@url}#{repository.url}"
         end
 
         def repositories
@@ -85,7 +85,7 @@ module Travis
         end
 
         def file_contents(ref, path)
-          svn.content(@repository.name, path, branch: ref)
+          svn.content(@repository.name, path, branch: ref.ref.name, revision: ref.sha)
         end
 
         def commit_info(change_root, username)

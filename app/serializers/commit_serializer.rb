@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class CommitSerializer < ApplicationSerializer
-  attributes :id, :message, :sha, :committed_at
+  attributes :id, :message, :committed_at
+
+  attributes(:sha) { |commit| "#{commit.ref.name}@#{commit.sha}" }
 
   attributes(:author) do |commit|
     {

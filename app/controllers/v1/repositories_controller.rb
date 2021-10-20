@@ -41,7 +41,11 @@ module V1
     def content
       head(:bad_request) && return if params[:ref].blank? || params[:path].blank?
 
-      result = @repository.file_contents(params[:ref], params[:path])
+      ref, commit = params[:ref].split('@')
+      ref = Ref.find_by(name: ref, repository: @repository)
+      commit = Commit.find_by(sha: commit, ref: ref)
+
+      result = @repository.file_contents(commit, params[:path])
       render(json: { errors: ['Cannot render file'] }, status: :unprocessable_entity) && return if result.blank?
 
       render plain: result[1]
