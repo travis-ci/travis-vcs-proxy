@@ -22,7 +22,6 @@ module Travis
         end
 
         def repositories
-          puts @username
           @user = ServerProviderUserSetting.find_by(username: @username)&.permission&.user
           return [] unless @user
 
@@ -68,7 +67,8 @@ module Travis
           result = xml.at_xpath('log')&.children.map do |entry|
             next unless uname = user_map[entry.at_xpath('author')&.text]
 
-            user = ServerProviderUserSetting.find_by(username: uname)&.permission.user
+            puts uname
+            user = ServerProviderUserSetting.find_by(username: uname)&.permission&.user
             next unless user
 
             {
