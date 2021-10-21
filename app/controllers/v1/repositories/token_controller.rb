@@ -11,9 +11,13 @@ module V1
         head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
 
         host = @repository.server_provider.host_type
-        token = @repository.settings(host)&.token || @repository.server_provider.settings(host).token
+        token = @repository.settings(host)&.token || @repository.server_provider.settings(host)&.token
 
-        render json: { token: @repository.decrypted_token(token) }
+        if token
+          render json: { token: @repository.decrypted_token(token) }
+        else
+          render json: { token: current_user.server_provider_permission(@repository.server_provider.id).setting.token }
+        end
       end
 
       def update # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
