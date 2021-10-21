@@ -22,7 +22,7 @@ module Travis
         end
 
         def repositories
-          @user = ServerProviderUserSetting.find_by(username: @username).permission.user
+          @user = ServerProviderUserSetting.find_by(username: @username)&.permission.user
           return [] unless @user
 
           @permissions = ::RepositoryPermission.where(user_id: @user.id)
