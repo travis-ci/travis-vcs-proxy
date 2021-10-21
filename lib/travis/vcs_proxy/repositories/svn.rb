@@ -66,9 +66,8 @@ module Travis
           xml = Nokogiri::XML(xml_res)
           result = xml.at_xpath('log')&.children.map do |entry|
             next unless uname = user_map[entry.at_xpath('author')&.text]
-            next unless uname != @repository.server_provider.settings(:svn_host).username
 
-            user = ServerProviderUserSetting.find_by(username: @repository.server_provider.settings(:svn_host).username).permission.user
+            user = ServerProviderUserSetting.find_by(server_provider: @repository.server_provider, username: uname)&.permission.user
             next unless user
 
             {
