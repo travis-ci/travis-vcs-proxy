@@ -91,8 +91,14 @@ module Travis
         end
 
         def commit_info(change_root, username)
-          # TODO
-          nil
+          user = ServerProviderUserSetting.find_by(username: username)&.permission&.user
+          repo_name, branch = change_root.split('@')
+
+          {
+            repository_name: repo_name,
+            ref: branch,
+            email: user.email,
+          }
         end
       end
     end

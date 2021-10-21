@@ -37,6 +37,6 @@ class SvnServerProvider < ServerProvider
   end
 
   def default_branch
-    'master'
+    'trunk'
   end
 end
