@@ -33,9 +33,10 @@ module Travis
 
       def branches(repo)
         res = exec(repo, "ls #{repository_path(repo)}/branches")
-        return [] unless res
+        return['trunk'] unless res
 
-        res.split("\n")
+        res = res.split("\n").each { |r| r.delete_suffix!('/') }
+        res << 'trunk'
       end
 
       def content(repo, file, branch: nil, revision: nil)
@@ -85,7 +86,7 @@ module Travis
       end
 
       def get_branch(branch)
-        branch ? '/branches/' + branch : 'trunk'
+        branch && branch != 'trunk' ? '/branches/' + branch : 'trunk'
       end
     end
   end
