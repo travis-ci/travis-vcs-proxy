@@ -68,7 +68,7 @@ module Travis
           result = xml.at_xpath('log')&.children.map do |entry|
             next unless uname = user_map[entry.at_xpath('author')&.text]
 
-            user = ServerProviderUserSetting.find_by(server_provider: @repository.server_provider, username: uname)&.permission.user
+            user = ServerProviderUserSetting.find_by(username: uname)&.permission.user
             next unless user
 
             {
