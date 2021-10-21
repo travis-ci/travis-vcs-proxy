@@ -67,7 +67,6 @@ module Travis
           result = xml.at_xpath('log')&.children.map do |entry|
             next unless uname = user_map[entry.at_xpath('author')&.text]
 
-            puts uname
             user = ServerProviderUserSetting.find_by(username: uname)&.permission&.user
             next unless user
 
@@ -75,7 +74,7 @@ module Travis
               sha: entry.attribute('revision')&.value || '0',
               user: user,
               message: entry.at_xpath('msg')&.text,
-              committed_at: Time.at(entry.at_xpath('date').text.to_i),
+              committed_at: DateTime.parse(entry.at_xpath('date').text),
             }
           end
           result&.compact
