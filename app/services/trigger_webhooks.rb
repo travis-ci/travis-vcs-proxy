@@ -64,7 +64,7 @@ class TriggerWebhooks
       commits: [
         {
           id: @commit.id.to_s,
-          sha: @commit.sha,
+          sha: "#{@ref.name}@#{@commit.sha}",
           revision: @commit.sha,
           message: @commit.message || '',
           committed_at: @commit.committed_at,
