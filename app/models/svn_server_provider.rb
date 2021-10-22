@@ -15,7 +15,7 @@ class SvnServerProvider < ServerProvider
       repo_token = token
     end
 
-    Travis::VcsProxy::Repositories::Svn.new(repository, url, username, repo_token)
+    Travis::VcsProxy::Repositories::Svn.new(self, repository, url, username, repo_token)
   end
 
   def remote_repositories(username = nil, token = nil)

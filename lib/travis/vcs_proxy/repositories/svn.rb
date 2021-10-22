@@ -10,7 +10,8 @@ module Travis
 
         attr_accessor :svn
 
-        def initialize(repository, url, username, token)
+        def initialize(server_provider, repository, url, username, token)
+          @server_provider = server_provider
           @repository = repository
           @url = url
           @username = username
@@ -29,7 +30,7 @@ module Travis
           @repositories = []
           @permissions.each do |_perm|
             repo = ::Repository.find_by(id: _perm.repository_id) if _perm.permission
-            @repositories.append(repo) if repo
+            @repositories.append(repo) if repo && repo.server_provider.id == @server_provider.id
           end
           @repositories
         end
