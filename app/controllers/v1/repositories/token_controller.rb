@@ -10,7 +10,9 @@ module V1
         permission = current_user.repository_permission(@repository.id)
         head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
 
-        token = @repository.token || @repository.server_provider.token || current_user.server_provider_permission(@repository.server_provider.id)&.setting&.token
+        token = @repository.token
+        token = @repository.server_provider.token if token.blank?
+        token = current_user.server_provider_permission(@repository.server_provider.id)&.setting&.token if token.blank?
 
         render json: { token: token }
       end
