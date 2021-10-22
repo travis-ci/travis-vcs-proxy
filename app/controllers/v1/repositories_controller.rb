@@ -44,8 +44,15 @@ module V1
       ref, commit = params[:ref].split('@')
       ref = Ref.find_by(name: ref, repository: @repository)
       commit = Commit.find_by(sha: commit, ref: ref)
+      user_token = current_user.server_provider_permission(@repository.server_provider.id)&.setting
 
       result = @repository.file_contents(commit, params[:path])
+
+      if result.blank? && !user_token.token.blank?
+        repo = @repository.server_provider.bare_repo(@repository, user_token.username, user_token.token)
+        result = repo.file_contents(commit, params[:path])
+      end
+
       render(json: { errors: ['Cannot render file'] }, status: :unprocessable_entity) && return if result.blank?
 
       render plain: result
