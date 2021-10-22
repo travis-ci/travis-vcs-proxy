@@ -48,7 +48,7 @@ class TriggerWebhooks
     JSON.dump(
       branch_name: @ref.name,
       sender_id: @commit.user_id.to_s,
-      new_revision: @commit.sha,
+      new_revision: "#{@ref.name}@#{@commit.sha}",
       sender_login: @user.email,
       server_type: server_type,
       owner_vcs_id: @server_provider.id.to_s,
@@ -65,7 +65,7 @@ class TriggerWebhooks
         {
           id: @commit.id.to_s,
           sha: "#{@ref.name}@#{@commit.sha}",
-          revision: @commit.sha,
+          revision: "#{@ref.name}@#{@commit.sha}",
           message: @commit.message || '',
           committed_at: @commit.committed_at,
           commiter_name: @user.name || '',
