@@ -15,7 +15,14 @@ module V1
       ref = repository.refs.branch.find_by(name: commit_info[:ref]) || repository.refs.branch.create(name: commit_info[:ref])
       head(:unprocessable_entity) && return unless ref
 
-      commit = ref.commits.find_by(sha: params[:sha]) || ref.commits.create(sha: params[:sha], repository: repository, user: user, committed_at: Time.now)
+      commit = ref.commits.find_by(sha: params[:sha]) ||
+        ref.commits.create(
+          sha: params[:sha],
+          repository: repository,
+          user: user,
+          committed_at: params[:timestamp] ? Time.at(params[:timestamp]) : Time.now,
+          message: params[:message] || ""
+        )
       head(:unprocessable_entity) && return unless commit
 
       TriggerWebhooks.new(commit).call
