@@ -46,7 +46,7 @@ class TriggerWebhooks
 
   def webhook_payload(webhook)
     JSON.dump(
-      branch_name: 'main',
+      branch_name: @ref.name,
       sender_id: @commit.user_id.to_s,
       new_revision: @commit.sha,
       sender_login: @user.email,
