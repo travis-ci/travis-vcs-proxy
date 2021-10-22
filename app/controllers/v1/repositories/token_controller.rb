@@ -16,7 +16,7 @@ module V1
         if token
           render json: { token: @repository.decrypted_token(token) }
         else
-          render json: { token: current_user.server_provider_permission(@repository.server_provider.id).setting.token }
+          render json: { token: current_user.server_provider_permission(@repository.server_provider.id)&.setting&.token }
         end
       end
 
