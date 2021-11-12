@@ -48,7 +48,7 @@ class User < ApplicationRecord
   end
 
   def mark_as_deleted
-    update_columns(email: "deleted_email_#{Kernel.rand(1_000_000_000)}", name: nil, active: false)
+    update_columns(email: "deleted_email_#{Kernel.rand(1_000_000_000)}@example.com", name: nil, active: false)
   end
 
   private
