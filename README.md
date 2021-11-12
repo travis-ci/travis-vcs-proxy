@@ -1,2 +1,2 @@
 # travis-vcs-proxy
-A Travis CI Proxy backend for integration wit VCS other than Git
+A Travis CI Proxy backend for integration with VCS other than Git
