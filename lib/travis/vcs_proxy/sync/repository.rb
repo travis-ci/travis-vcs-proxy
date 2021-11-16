@@ -47,7 +47,8 @@ module Travis
 
             # Remove users that don't have access anymore
             (db_emails - repo_emails).each do |email|
-              users[email].first.repository_permission(@repository.id).delete
+              u = users[email]&.first
+              u.repository_permission(@repository.id).delete if u
             end
 
             perms.each do |email, permission|
