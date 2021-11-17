@@ -110,12 +110,14 @@ module Travis
         private
 
         def protects(user)
-          puts "p.token: #{token_for_user(user[:email]).inspect}"
+          token = token_for_user(user[:email])
+          return nil unless token
+
           @_p4 = ::P4.new unless @_p4
           @_p4.charset = 'utf8'
           @_p4.port = @url
           @_p4.user = user[:name]
-          @_p4.password = token_for_user(user[:email])
+          @_p4.password = token
           @_p4.ticket_file = '/dev/null'
           @_p4.connect
           @_p4.run_trust('-y')

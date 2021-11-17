@@ -3,6 +3,8 @@
 module V1
   class WebhooksController < ApplicationController
     def receive # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      puts "WEBHOOK RECEIVED"
+      puts "WEBHOOK params: #{params.inspect}"
       head(:unauthorized) && return unless server_provider = ServerProvider.find_by(listener_token: params[:token])
 
       head(:internal_server_error) && return unless commit_info = server_provider.commit_info_from_webhook(params)
