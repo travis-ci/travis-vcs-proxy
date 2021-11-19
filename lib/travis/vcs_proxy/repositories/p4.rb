@@ -72,8 +72,13 @@ module Travis
         end
 
         def permissions
+          puts "PERMISSIONS!"
           @permissions ||= users.each_with_object({}) do |user, memo|
-            memo[user[:email]] = p4.run_protects('-u', user[:name], '-M', "//#{@repository.name}/...").first['permMax']
+            puts "user: #{user.inspect}"
+            p = protects(user)
+            puts "PROTECTS FOR #{user.inspect}"
+            values = p.detect{ |repo| repo['depotFile'] == "//#{@repository.name}/..."} if p
+            memo[user[:email]] = values['perm'] if values
           rescue P4Exception => e
             puts e.message.inspect
           end
@@ -104,9 +109,39 @@ module Travis
 
         private
 
+        def protects(user)
+          token = token_for_user(user[:email])
+          return nil unless token
+
+          @_p4 = ::P4.new unless @_p4
+          @_p4.charset = 'utf8'
+          @_p4.port = @url
+          @_p4.user = user[:name]
+          @_p4.password = token
+          @_p4.ticket_file = '/dev/null'
+          @_p4.connect
+          @_p4.run_trust('-y')
+          result = @_p4.run_protects
+          puts "PROTECTS RESULT : #{result.inspect}"
+          @_p4.disconnect
+          result
+        end
+
+        def token_for_user(email)
+          return @repository.token if @repository.token&.length > 0
+
+          user = User.find_by(email: email)
+          puts "user: #{user.inspect}"
+          return @repository.server_provider.token unless user
+
+          puts "token from settings"
+          setting = user.server_provider_permission(@repository.server_provider_id)&.setting
+          setting.token if setting
+        end
+
         def p4
           return @p4 if defined?(@p4)
-
+      
           @p4 = ::P4.new
           @p4.charset = 'utf8'
           @p4.port = @url
