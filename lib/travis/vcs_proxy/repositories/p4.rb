@@ -88,6 +88,16 @@ module Travis
           p4.run_print("//#{@repository.name}/#{path}")[1]
         rescue P4Exception => e
           puts e.message.inspect
+          file_contents_stream(ref, path)
+        end
+
+        def file_contents_stream(commit, path)
+          return nil unless commit
+
+          ref = Ref.find(commit.ref_id)
+          p4.run_print("//#{@repository.name}/#{ref.name}/#{path}")[1] if ref
+        rescue P4Exception => e
+          puts e.message.inspect
 
           nil
         end

@@ -11,7 +11,8 @@ module V1
         head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
 
         host = @repository.server_provider.host_type
-        token = @repository.settings(host)&.token || @repository.server_provider.settings(host)&.token
+        token = @repository.settings(host)&.token 
+        token = @repository.server_provider.settings(host)&.token if !token || token.length == 0
 
         if token
           render json: { token: @repository.decrypted_token(token) }
