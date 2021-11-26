@@ -46,7 +46,7 @@ module V1
         ref = Ref.find_by(name: ref, repository: @repository)
         commit = Commit.find_by(sha: commit, ref: ref)
       else
-        commit = Commit.find_by(sha: ref)
+        commit = Commit.find_by(sha: ref, repository: @repository)
       end
 
       result = @repository.file_contents(commit, params[:path])
