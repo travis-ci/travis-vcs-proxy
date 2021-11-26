@@ -75,13 +75,14 @@ module Travis
           puts "PERMISSIONS!"
           @permissions ||= users.each_with_object({}) do |user, memo|
             puts "user: #{user.inspect}"
-            p = protects(user)
-            puts "PROTECTS FOR #{user.inspect}"
+            p = protects(user) if user
+            puts "PROTECTS FOR #{user.inspect} AND repo : #{@repository.name}"
             if p
               values = p.detect{ |repo| repo['depotFile'] == "//#{@repository.name}/..."}
               values = p.detect{ |repo| repo['depotFile'] == "//..."} unless values
             end
             memo[user[:email]] = values['perm'] if values
+            puts "setting perms for user #{user[:email].inspect} to #{memo[user[:email]].inspect} for repo: #{@repository.name}"
           rescue P4Exception => e
             puts e.message.inspect
           end
