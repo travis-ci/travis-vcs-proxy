@@ -16,6 +16,8 @@ module Travis
         end
 
         def repositories
+          puts "REPOSITORIES! uname: #{@username}"
+          puts " rundepots: #{p4.run_depots.inspect}"
           @repositories ||= p4.run_depots.map do |depot|
             {
               name: depot['name'],
@@ -28,6 +30,7 @@ module Travis
         end
 
         def branches
+          puts "BRANCHES! uname: #{@username}, repo: #{@repository.name}"
           @branches ||= p4.run_streams("//#{@repository.name}/...").map do |stream|
             {
               name: stream['Stream'],
