@@ -77,7 +77,10 @@ module Travis
             puts "user: #{user.inspect}"
             p = protects(user)
             puts "PROTECTS FOR #{user.inspect}"
-            values = p.detect{ |repo| repo['depotFile'] == "//#{@repository.name}/..."} if p
+            if p
+              values = p.detect{ |repo| repo['depotFile'] == "//#{@repository.name}/..."}
+              values = p.detect{ |repo| repo['depotFile'] == "//..."} unless values
+            end
             memo[user[:email]] = values['perm'] if values
           rescue P4Exception => e
             puts e.message.inspect
