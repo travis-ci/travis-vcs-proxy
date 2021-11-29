@@ -13,11 +13,12 @@ module V1
         host = @repository.server_provider.host_type
         token = @repository.settings(host)&.token 
         token = @repository.server_provider.settings(host)&.token if !token || token.length == 0
-
+        username = current_user.server_provider_permission(@repository.server_provider.id).setting.username
+        
         if token
-          render json: { token: @repository.decrypted_token(token) }
+          render json: { token: @repository.decrypted_token(token),username: username }
         else
-          render json: { token: current_user.server_provider_permission(@repository.server_provider.id).setting.token }
+          render json: { token: current_user.server_provider_permission(@repository.server_provider.id).setting.token, username: username }
         end
       end
 
