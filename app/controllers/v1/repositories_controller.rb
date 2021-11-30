@@ -42,8 +42,12 @@ module V1
       head(:bad_request) && return if params[:ref].blank? || params[:path].blank?
 
       ref, commit = params[:ref].split('@')
-      ref = Ref.find_by(name: ref, repository: @repository)
-      commit = Commit.find_by(sha: commit, ref: ref)
+      if commit
+        ref = Ref.find_by(name: ref, repository: @repository)
+        commit = Commit.find_by(sha: commit, ref: ref)
+      else
+        commit = Commit.find_by(sha: ref, repository: @repository)
+      end
       user_token = current_user.server_provider_permission(@repository.server_provider.id)&.setting
 
       result = @repository.file_contents(commit, params[:path])

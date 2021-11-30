@@ -73,7 +73,12 @@ module Travis
 
         def permissions
           @permissions ||= users.each_with_object({}) do |user, memo|
-            memo[user[:email]] = p4.run_protects('-u', user[:name], '-M', "//#{@repository.name}/...").first['permMax']
+            p = protects(user) if user
+            if p
+              values = p.detect{ |repo| repo['depotFile'] == "//#{@repository.name}/..."}
+              values = p.detect{ |repo| repo['depotFile'] == "//..."} unless values
+            end
+            memo[user[:email]] = values['perm'] if values
           rescue P4Exception => e
             puts e.message.inspect
           end
@@ -81,6 +86,16 @@ module Travis
 
         def file_contents(ref, path)
           p4.run_print("//#{@repository.name}/#{path}")[1]
+        rescue P4Exception => e
+          puts e.message.inspect
+          file_contents_stream(ref, path)
+        end
+
+        def file_contents_stream(commit, path)
+          return nil unless commit
+
+          ref = Ref.find(commit.ref_id)
+          p4.run_print("//#{@repository.name}/#{ref.name}/#{path}")[1] if ref
         rescue P4Exception => e
           puts e.message.inspect
 
@@ -103,6 +118,33 @@ module Travis
         end
 
         private
+
+        def protects(user)
+          token = token_for_user(user[:email])
+          return nil unless token
+
+          _p4 = ::P4.new
+          _p4.charset = 'utf8'
+          _p4.port = @url
+          _p4.user = user[:name]
+          _p4.password = token
+          _p4.ticket_file = '/dev/null'
+          _p4.connect
+          _p4.run_trust('-y')
+          result = _p4.run_protects
+          _p4.disconnect
+          result
+        end
+
+        def token_for_user(email)
+          return @repository.token if @repository.token&.length > 0
+
+          user = User.find_by(email: email)
+          return @repository.server_provider.token unless user
+
+          setting = user.server_provider_permission(@repository.server_provider_id)&.setting
+          setting.token if setting
+        end
 
         def p4
           return @p4 if defined?(@p4)
