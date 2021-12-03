@@ -175,7 +175,7 @@ module Travis
           @p4
         rescue P4Exception => e
           puts e.message.inspect
-          raise
+          #raise
         end
       end
     end
