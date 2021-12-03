@@ -35,6 +35,7 @@ module Travis
         end
 
         def branches
+          puts "svn.SYNC BRANCHES FOR: #{@repository.name}"
           @branches ||= svn.branches(@repository.name).map do |branch|
             {
               name: branch,
@@ -43,6 +44,7 @@ module Travis
         end
 
         def users
+          puts "svn.SYNC USERS FOR: #{@repository.name}"
           @users ||= svn.users(@repository.name).map do |user|
 
             {
@@ -57,6 +59,7 @@ module Travis
         end
 
         def commits(branch_name)
+          puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name}"
           user_map = users.each_with_object({}) do |user, memo|
             memo[user[:name]] = user[:email]
           end

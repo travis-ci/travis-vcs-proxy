@@ -16,7 +16,7 @@ module V1
         username = current_user.server_provider_permission(@repository.server_provider.id).setting.username
         
         if token
-          render json: { token: @repository.decrypted_token(token),username: username }
+          render json: { token: @repository.decrypted_token(token), username: username }
         else
           render json: { token: current_user.server_provider_permission(@repository.server_provider.id).setting.token, username: username }
         end
