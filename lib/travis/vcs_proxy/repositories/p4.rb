@@ -17,7 +17,7 @@ module Travis
 
         def repositories
           puts "REPOSITORIES! uname: #{@username}"
-          puts " rundepots: #{p4.run_depots.inspect}"
+          puts " rundepots: #{p4.run_depots.inspect}" if p4
           @repositories ||= p4.run_depots.map do |depot|
             {
               name: depot['name'],
