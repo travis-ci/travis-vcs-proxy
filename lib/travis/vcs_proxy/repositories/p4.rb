@@ -143,6 +143,8 @@ module Travis
           puts "PROTECTS RESULT : #{result.inspect}"
           _p4.disconnect
           result
+        rescue P4Exception => e
+          puts e.message.inspect
         end
 
         def token_for_user(email)

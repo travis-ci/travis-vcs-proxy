@@ -21,14 +21,14 @@ module Travis
           @svn.url = @url
         end
 
-        def repositories
+        def repositories(server_provider_id = nil)
           @user = ServerProviderUserSetting.find_by(username: @username)&.permission&.user
           return [] unless @user
 
           @permissions = ::RepositoryPermission.where(user_id: @user.id)
           @repositories = []
           @permissions.each do |_perm|
-            repo = ::Repository.find_by(id: _perm.repository_id) if _perm.permission
+            repo = ::Repository.find_by(id: _perm.repository_id, server_provider_id: server_provider_id) if _perm.permission
             @repositories.append(repo) if repo
           end
           @repositories
@@ -36,6 +36,7 @@ module Travis
 
         def branches
           puts "svn.SYNC BRANCHES FOR: #{@repository.name}"
+          @svn.url = @repository.url
           @branches ||= svn.branches(@repository.name).map do |branch|
             {
               name: branch,
@@ -45,6 +46,7 @@ module Travis
 
         def users
           puts "svn.SYNC USERS FOR: #{@repository.name}"
+          @svn.url = @repository.url
           @users ||= svn.users(@repository.name).map do |user|
 
             {
@@ -60,6 +62,7 @@ module Travis
 
         def commits(branch_name)
           puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name}"
+          @svn.url = @repository.url
           user_map = users.each_with_object({}) do |user, memo|
             memo[user[:name]] = user[:email]
           end
@@ -90,6 +93,7 @@ module Travis
         end
 
         def file_contents(ref, path)
+          svn.url = @repository.url
           svn.content(@repository.name, path, branch: ref.ref.name, revision: ref.sha)
         end
 

@@ -19,7 +19,7 @@ class SvnServerProvider < ServerProvider
   end
 
   def remote_repositories(username = nil, token = nil)
-    bare_repo(nil, username, token).repositories
+    bare_repo(nil, username, token).repositories(self.id)
   end
 
   def commit_info_from_webhook(payload)

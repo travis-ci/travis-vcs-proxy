@@ -70,23 +70,22 @@ module Travis
         u = uri(@url)
         return @url unless u
 
-        if u.port
-          "svn+ssh://#{@username}@#{u.host}:#{u.port}#{u.path}" unless assembla?
-          "svn+ssh://#{u.host}:#{u.port}"
+        if u[:port]
+          "svn+ssh://#{@username}@#{u[:host]}:#{u[:port]}#{u[:path]}" unless assembla?
+          "svn+ssh://#{u[:host]}:#{u[:port]}"
         else
-          "svn+ssh://#{@username}@#{u.host}#{u.path}" unless assembla?
-          "svn+ssh://#{u.host}"
+          "svn+ssh://#{@username}@#{u[:host]}#{u[:path]}" unless assembla?
+          "svn+ssh://#{u[:host]}"
         end
       end
 
       def assembla?
-        @assembla ||= uri(@url)&.host.include? 'assembla'
-      rescue
-        false
+        u = uri(@url)
+        u && u[:host].include?('assembla')
       end
 
       def repository_name
-        uri(@url)&.path.split('/').last
+        uri(@url)&[:path].split('/').last
       end
 
       def get_branch(branch)
@@ -99,12 +98,14 @@ module Travis
         return nil unless url
 
         host,path = url.split('/',2)
-        path = '/' unless path&.length > 0
+        path = '/' unless path && path.length > 0
         host,user = host.split('@',2).reverse
         user,pass = user.split(':',2) if user
+        host,port = host.split(':',2)
         {
           :proto => proto,
           :host => host,
+          :port => port,
           :path => path,
           :user => user,
           :pass => pass

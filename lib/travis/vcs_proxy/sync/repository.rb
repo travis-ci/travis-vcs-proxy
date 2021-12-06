@@ -11,6 +11,7 @@ module Travis
         end
 
         def sync # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
+          puts "SYNC REPO #{@repository.name} @ #{@repository.server_provider.name}"
           username = @repository.settings(@host_type).username
           token = @repository.token
           if username.blank? || token.blank?
@@ -28,7 +29,7 @@ module Travis
           return if username.blank? || token.blank?
 
           repo = @repository.repo(username, token)
-          puts "syncing repo: #{repo.inspect}"
+          #puts "syncing repo: #{repo.inspect} @ #{@repository.server_provider.name}"
           puts "type: #{@host_type.inspect}"
 
           repo.branches.each do |branch|
