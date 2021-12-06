@@ -81,6 +81,8 @@ module Travis
 
       def assembla?
         @assembla ||= uri(@url)&.host.include? 'assembla'
+      rescue
+        false
       end
 
       def repository_name
@@ -92,6 +94,7 @@ module Travis
       end
 
       def uri(url)
+        puts "checkurl: #{url.inspect}"
         proto, url = url.split('://')
         return nil unless url
 
