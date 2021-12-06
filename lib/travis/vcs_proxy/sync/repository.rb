@@ -28,6 +28,8 @@ module Travis
           return if username.blank? || token.blank?
 
           repo = @repository.repo(username, token)
+          puts "syncing repo: #{repo.inspect}"
+          puts "type: #{@host_type.inspect}"
 
           repo.branches.each do |branch|
             branch_name = branch[:name].sub(%r{\A//#{Regexp.escape(@repository.name)}/}, '')
