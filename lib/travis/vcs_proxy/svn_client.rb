@@ -68,6 +68,8 @@ module Travis
         return @url if @password
 
         u = uri(@url)
+        return @url unless u
+
         if u.port
           "svn+ssh://#{@username}@#{u.host}:#{u.port}#{u.path}" unless assembla?
           "svn+ssh://#{u.host}:#{u.port}"
@@ -78,7 +80,7 @@ module Travis
       end
 
       def assembla?
-        @assembla ||= uri(@url).host.include? 'assembla'
+        @assembla ||= uri(@url)&.host.include? 'assembla'
       end
 
       def repository_name
@@ -91,6 +93,8 @@ module Travis
 
       def uri(url)
         proto, url = url.split('://')
+        return nil unless url
+
         host,path = url.split('/',2)
         path = '/' unless path&.length > 0
         host,user = host.split('@',2).reverse
