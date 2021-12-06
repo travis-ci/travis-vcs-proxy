@@ -1,6 +1,4 @@
 # frozen_string_literal: true
-
-require 'uri'
 require 'tempfile'
 
 module Travis
@@ -69,7 +67,7 @@ module Travis
       def url
         return @url if @password
 
-        u = URI(@url)
+        u = uri(@url)
         if u.port
           "svn+ssh://#{@username}@#{u.host}:#{u.port}#{u.path}" unless assembla?
           "svn+ssh://#{u.host}:#{u.port}"
@@ -80,15 +78,30 @@ module Travis
       end
 
       def assembla?
-        @assembla ||= URI(@url).host.include? 'assembla'
+        @assembla ||= uri(@url).host.include? 'assembla'
       end
 
       def repository_name
-        URI(@url)&.path.split('/').last
+        uri(@url)&.path.split('/').last
       end
 
       def get_branch(branch)
         branch && branch != 'trunk' ? '/branches/' + branch : 'trunk'
+      end
+
+      def uri(url)
+        proto, url = url.split('://')
+        host,path = url.split('/',2)
+        path = '/' unless path&.length > 0
+        host,user = host.split('@',2).reverse
+        user,pass = user.split(':',2) if user
+        {
+          :proto => proto,
+          :host => host,
+          :path => path,
+          :user => user,
+          :pass => pass
+        }
       end
     end
   end

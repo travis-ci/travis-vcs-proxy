@@ -14,14 +14,14 @@ module Travis
 
           ActiveRecord::Base.transaction do
 
-            puts "SYNC REPOS: #{@server_provider.remote_repositories.inspect}"
+            puts "SYNC REPOS #{@server_provider.name}: #{@server_provider.remote_repositories.inspect}"
             sync_repositories(@server_provider.remote_repositories)
 
             @server_provider.users.each do |user|
-              puts "sync.GETTING permission for: #{user.inspect} and sp: #{@server_provider.id}"
+              puts "sync.GETTING permission #{@server_provider.name} for: #{user.inspect} and sp: #{@server_provider.id}"
               next unless permission_setting = user.server_provider_permission(@server_provider.id).setting
 
-              puts "SYNC REPOS FOR USER: #{permission_setting.username} #{@server_provider.remote_repositories.inspect}"
+              puts "SYNC REPOS #{@server_provider.name} FOR USER: #{permission_setting.username} #{@server_provider.remote_repositories.inspect}"
               sync_repositories(@server_provider.remote_repositories(permission_setting.username, permission_setting.token))
             end
           end
