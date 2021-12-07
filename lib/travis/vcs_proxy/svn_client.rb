@@ -17,8 +17,10 @@ module Travis
         end
         ssh_file.close
         ENV['REPO_NAME'] = repo
-        puts "cmd : #{cmd.inspect}"
-        `svn #{cmd}`
+        puts "repo: #{repo.inspect}, cmd : #{cmd.inspect}"
+        res =  `svn #{cmd}`
+        puts res
+        res
       rescue Exception => e
         puts "SVN exec error: #{e.message}"
       ensure
