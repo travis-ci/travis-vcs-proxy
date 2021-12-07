@@ -66,14 +66,22 @@ module Travis
           user_map = users.each_with_object({}) do |user, memo|
             memo[user[:name]] = user[:email]
           end
+          puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} USERMAP: #{user_map.inspect}"
           xml_res = svn.log(@repository.name, nil, branch: branch_name, format: 'xml')
+
+          puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} RAWLOG: #{xml_res.inspect}"
           return [] unless xml_res
 
           xml = Nokogiri::XML(xml_res)
           result = xml.at_xpath('log')&.children.map do |entry|
+
+            puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} ENTRY: #{entry.inspect}"
             next unless uname = user_map[entry.at_xpath('author')&.text]
 
+            puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} UNAME: #{uname.inspect}"
             user = ServerProviderUserSetting.find_by(username: uname)&.permission&.user
+
+            puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} USER: #{user.inspect}"
             next unless user
 
             {
@@ -83,6 +91,8 @@ module Travis
               committed_at: DateTime.parse(entry.at_xpath('date').text),
             }
           end
+
+          puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} RESULT: #{result.inspect}"
           result&.compact
         end
 
