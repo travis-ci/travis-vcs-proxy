@@ -11,16 +11,20 @@ module Travis
 
         ssh_file = ::Tempfile.new('sshkey')
         ssh_file.write(@ssh_key)
-        ENV['SVN_SSH'] = "ssh -i #{ssh_file.path} -o StrictHostKeyChecking=no"
+        svn_ssh = "ssh -i #{ssh_file.path} -o StrictHostKeyChecking=no"
         if assembla?
-          ENV['SVN_SSH'] = "ssh -i #{ssh_file.path} -o SendEnv=REPO_NAME -o StrictHostKeyChecking=no -l svn"
+          svn_ssh = "ssh -i #{ssh_file.path} -o SendEnv=REPO_NAME -o StrictHostKeyChecking=no -l svn"
         end
         ssh_file.close
-        ENV['REPO_NAME'] = repo
-        puts "repo: #{repo.inspect}, cmd : #{cmd.inspect}"
-        res =  `svn #{cmd}`
+#        f = ::Tempfile.new("cmd")
+#        run_cmd("/usr/bin/svn #{cmd} > #{f.path}")
+#        res = File.read(f.path)
+        c = "REPO_NAME=\"#{repo}\" SVN_SSH=\"#{svn_ssh}\" svn #{cmd}"
+        puts c
+        res = `#{c}`
         puts res
         res
+
       rescue Exception => e
         puts "SVN exec error: #{e.message}"
       ensure
@@ -96,7 +100,6 @@ module Travis
       end
 
       def uri(url)
-        puts "checkurl: #{url.inspect}"
         proto, url = url.split('://')
         return nil unless url
 

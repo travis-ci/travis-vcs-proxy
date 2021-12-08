@@ -36,6 +36,7 @@ module Travis
 
         def branches
           puts "svn.SYNC BRANCHES FOR: #{@repository.name}"
+          @svn.token = @repository.token
           @svn.url = @repository.url
           @branches ||= svn.branches(@repository.name).map do |branch|
             {
@@ -46,6 +47,7 @@ module Travis
 
         def users
           puts "svn.SYNC USERS FOR: #{@repository.name}"
+          @svn.token = @repository.token
           @svn.url = @repository.url
           @users ||= svn.users(@repository.name).map do |user|
 
@@ -62,6 +64,7 @@ module Travis
 
         def commits(branch_name)
           puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name}"
+          @svn.token = @repository.token
           @svn.url = @repository.url
           user_map = users.each_with_object({}) do |user, memo|
             memo[user[:name]] = user[:email]
