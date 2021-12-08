@@ -56,8 +56,6 @@ module V1
     end
 
     def sync
-      return if @repository.server_provider.id != 60
-
       SyncJob.perform_later(SyncJob::SyncType::REPOSITORY, @repository.id, current_user.id)
 
       head :ok

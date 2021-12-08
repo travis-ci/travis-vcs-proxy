@@ -100,8 +100,6 @@ module V1
     end
 
     def sync
-      return if @server_provider.id != 60
-
       SyncJob.perform_later(SyncJob::SyncType::SERVER_PROVIDER, @server_provider.id, current_user.id)
 
       head :ok
