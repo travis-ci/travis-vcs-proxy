@@ -1,6 +1,4 @@
 # frozen_string_literal: true
-
-require 'uri'
 require 'tempfile'
 
 module Travis
@@ -13,13 +11,18 @@ module Travis
 
         ssh_file = ::Tempfile.new('sshkey')
         ssh_file.write(@ssh_key)
-        ENV['SVN_SSH'] = "ssh -i #{ssh_file.path} -o StrictHostKeyChecking=no"
+        ssh_file.write("\n") # making sure there's newline in the ssh key - otherwise call will fail
+        svn_ssh = "ssh -i #{ssh_file.path} -o StrictHostKeyChecking=no"
         if assembla?
-          ENV['SVN_SSH'] = "ssh -i #{ssh_file.path} -o SendEnv=REPO_NAME -o StrictHostKeyChecking=no -l svn"
+          svn_ssh = "ssh -i #{ssh_file.path} -o SendEnv=REPO_NAME -o StrictHostKeyChecking=no -l svn"
         end
         ssh_file.close
-        ENV['REPO_NAME'] = repo
-        `svn #{cmd}`
+        c = "REPO_NAME=\"#{repo}\" SVN_SSH=\"#{svn_ssh}\" svn #{cmd}"
+        res = `#{c}`
+        res
+
+      rescue Exception => e
+        puts "SVN exec error: #{e.message}"
       ensure
         ssh_file&.unlink
       end
@@ -67,26 +70,48 @@ module Travis
       def url
         return @url if @password
 
-        u = URI(@url)
-        if u.port
-          "svn+ssh://#{@username}@#{u.host}:#{u.port}#{u.path}" unless assembla?
-          "svn+ssh://#{u.host}:#{u.port}"
+        u = uri(@url)
+        return @url unless u
+
+        if u[:port]
+          "svn+ssh://#{@username}@#{u[:host]}:#{u[:port]}#{u[:path]}" unless assembla?
+          "svn+ssh://#{u[:host]}:#{u[:port]}"
         else
-          "svn+ssh://#{@username}@#{u.host}#{u.path}" unless assembla?
-          "svn+ssh://#{u.host}"
+          "svn+ssh://#{@username}@#{u[:host]}#{u[:path]}" unless assembla?
+          "svn+ssh://#{u[:host]}"
         end
       end
 
       def assembla?
-        @assembla ||= URI(@url).host.include? 'assembla'
+        u = uri(@url)
+        u && u[:host].include?('assembla')
       end
 
       def repository_name
-        URI(@url)&.path.split('/').last
+        uri(@url)&[:path].split('/').last
       end
 
       def get_branch(branch)
         branch && branch != 'trunk' ? '/branches/' + branch : 'trunk'
+      end
+
+      def uri(url)
+        proto, url = url.split('://')
+        return nil unless url
+
+        host,path = url.split('/',2)
+        path = '/' unless path && path.length > 0
+        host,user = host.split('@',2).reverse
+        user,pass = user.split(':',2) if user
+        host,port = host.split(':',2)
+        {
+          :proto => proto,
+          :host => host,
+          :port => port,
+          :path => path,
+          :user => user,
+          :pass => pass
+        }
       end
     end
   end

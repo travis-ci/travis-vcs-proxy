@@ -134,6 +134,8 @@ module Travis
           result = _p4.run_protects
           _p4.disconnect
           result
+        rescue P4Exception => e
+          puts e.message.inspect
         end
 
         def token_for_user(email)
@@ -162,7 +164,7 @@ module Travis
           @p4
         rescue P4Exception => e
           puts e.message.inspect
-          raise
+          #raise
         end
       end
     end

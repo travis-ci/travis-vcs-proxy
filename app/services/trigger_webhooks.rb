@@ -46,7 +46,7 @@ class TriggerWebhooks
 
   def webhook_payload(webhook)
     JSON.dump(
-      branch_name: @ref.name,
+      branch_name: @ref&.name || 'main',
       sender_id: @commit.user_id.to_s,
       new_revision: "#{@ref.name}@#{@commit.sha}",
       sender_login: @user.email,
@@ -57,7 +57,7 @@ class TriggerWebhooks
         id: @repository.id.to_s,
         name: @repository.name,
         full_name: @repository.name,
-        slug: @repository.url,
+        slug: "#{@repository.server_provider.name}/#{@repository.name}",
         is_private: true,
 
       },

@@ -19,13 +19,13 @@ class SvnServerProvider < ServerProvider
   end
 
   def remote_repositories(username = nil, token = nil)
-    bare_repo(nil, username, token).repositories
+    bare_repo(nil, username, token).repositories(self.id)
   end
 
   def commit_info_from_webhook(payload)
     return unless payload.key?(:change_root) && payload.key?(:username)
 
-    bare_repo.commit_info(payload[:change_root], payload[:username])
+    bare_repo.commit_info(payload[:change_root], payload[:username], id)
   end
 
   def provider_type
