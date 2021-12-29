@@ -11,6 +11,7 @@ module Travis
 
         ssh_file = ::Tempfile.new('sshkey')
         ssh_file.write(@ssh_key)
+        ssh_file.write("\n") # making sure there's newline in the ssh key - otherwise call will fail
         svn_ssh = "ssh -i #{ssh_file.path} -o StrictHostKeyChecking=no"
         if assembla?
           svn_ssh = "ssh -i #{ssh_file.path} -o SendEnv=REPO_NAME -o StrictHostKeyChecking=no -l svn"

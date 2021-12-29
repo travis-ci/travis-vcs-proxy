@@ -21,8 +21,9 @@ module Travis
           @svn.url = @url
         end
 
+
         def repositories(server_provider_id = nil)
-          @user = ServerProviderUserSetting.find_by(username: @username)&.permission&.user
+          @user = get_user(server_provider_id, @username)
           return [] unless @user
 
           @permissions = ::RepositoryPermission.where(user_id: @user.id)
@@ -82,7 +83,7 @@ module Travis
             next unless uname = user_map[entry.at_xpath('author')&.text]
 
             puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} UNAME: #{uname.inspect}"
-            user = ServerProviderUserSetting.find_by(username: uname)&.permission&.user
+            user = get_user(@repository.server_provider.id, uname)
 
             puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} USER: #{user.inspect}"
             next unless user
@@ -110,8 +111,8 @@ module Travis
           svn.content(@repository.name, path, branch: ref.ref.name, revision: ref.sha)
         end
 
-        def commit_info(change_root, username)
-          user = ServerProviderUserSetting.find_by(username: username)&.permission&.user
+        def commit_info(change_root, username, server_provider_id)
+          user = get_user(server_provider_id, username)
           repo_name, branch = change_root.split('@')
 
           {
@@ -120,6 +121,15 @@ module Travis
             email: user.email,
           }
         end
+
+        def get_user(server_provider_id, username)
+          user = nil
+          ServerProviderUserSetting.where(username: username)&.each do |setting|
+            if setting.permission&.server_provider_id == server_provider_id
+              user = setting.permission.user
+            end
+          end
+          user
       end
     end
   end

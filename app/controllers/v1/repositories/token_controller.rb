@@ -11,12 +11,16 @@ module V1
         head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
 
         host = @repository.server_provider.host_type
-        token = @repository.settings(host)&.token 
-        token = @repository.server_provider.settings(host)&.token if !token || token.length == 0
+        token = @repository.token
+        if !token || token.length == 0
+          token = @repository.settings(host)&.token if !token || token.length == 0
+          token = @repository.server_provider.settings(host)&.token if !token || token.length == 0
+          token = @repository.decrypted_token(token) if token
+        end
         username = current_user.server_provider_permission(@repository.server_provider.id).setting.username
         
         if token
-          render json: { token: @repository.decrypted_token(token), username: username }
+          render json: { token: token, username: username }
         else
           render json: { token: current_user.server_provider_permission(@repository.server_provider.id).setting.token, username: username }
         end

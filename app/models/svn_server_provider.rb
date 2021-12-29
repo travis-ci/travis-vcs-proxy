@@ -25,7 +25,7 @@ class SvnServerProvider < ServerProvider
   def commit_info_from_webhook(payload)
     return unless payload.key?(:change_root) && payload.key?(:username)
 
-    bare_repo.commit_info(payload[:change_root], payload[:username])
+    bare_repo.commit_info(payload[:change_root], payload[:username], id)
   end
 
   def provider_type
