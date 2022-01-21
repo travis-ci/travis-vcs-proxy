@@ -75,19 +75,33 @@ module V1
       render json: { emails: [current_user.email] }
     end
 
-    def server_providers
-      server_providers = current_user.server_providers
-                                     .includes(:server_provider_permissions)
-                                     .includes(:setting_objects)
+    def organizations
+      organizations = current_user.organizations
+                                     .includes(:organization_permissions)
                                      .order(:name)
                                      .page(params[:page])
                                      .per(params[:limit])
-
-      render json: paginated_collection(:server_providers, :server_provider, server_providers)
+      puts "orgs: #{organizations.inspect}"
+      render json: paginated_collection(:organizations, :organization, organizations)
     end
 
     def repositories
-      render json: current_user.repositories.map { |repository| presented_entity(:repository, repository) }
+      order = params[:sort_by] == 'last_synced_at' ? 'DESC' : 'ASC'
+      repositories = current_user.repositories.page(params[:page]).per(params[:limit])
+      repositories = repositories.order(params[:sort_by] => order) if params[:sort_by].present?
+      repositories = repositories.where('name LIKE ?', "%#{params[:filter]}%") if params[:filter].present?
+
+      puts" repos: #{repositories.inspect}"
+      render json: paginated_collection(:repositories, :repository, repositories)
+
+    end
+
+    def organizations_for_choice
+      organizations = current_user.organizations
+                                     .includes(:organization_permissions)
+                                     .order(:name)
+
+      render json: organizations.map { |org| { id: org.id, name: org.name } }
     end
 
     def sync

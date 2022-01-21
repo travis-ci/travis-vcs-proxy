@@ -14,7 +14,8 @@ class TriggerWebhooks
     @ref = commit.ref
     @repository = @ref.repository
     @user = commit.user
-    @server_provider = @repository.server_provider
+    @owner_id = @repository.owner_id
+    @owner_type = @repository.owner_type
   end
 
   def call
@@ -51,13 +52,13 @@ class TriggerWebhooks
       new_revision: "#{@ref.name}@#{@commit.sha}",
       sender_login: @user.email,
       server_type: server_type,
-      owner_vcs_id: @server_provider.id.to_s,
+      owner_vcs_id: @repository.owner_id.to_s,
       sender_vcs_id: @commit.user_id.to_s,
       repository: {
         id: @repository.id.to_s,
         name: @repository.name,
         full_name: @repository.name,
-        slug: "#{@repository.server_provider.name}/#{@repository.name}",
+        slug: @repository.url,
         is_private: true,
 
       },
@@ -76,6 +77,6 @@ class TriggerWebhooks
   end
 
   def server_type
-    PROVIDER_KLASS[@server_provider.type]
+    @repository.server_type
   end
 end

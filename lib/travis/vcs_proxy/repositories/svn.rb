@@ -10,8 +10,7 @@ module Travis
 
         attr_accessor :svn
 
-        def initialize(server_provider, repository, url, username, token)
-          @server_provider = server_provider
+        def initialize(repository, url, username, token)
           @repository = repository
           @url = url
           @username = username
@@ -29,8 +28,8 @@ module Travis
 
           @permissions = ::RepositoryPermission.where(user_id: @user.id)
           @repositories = []
-          @permissions.each do |_perm|
-            repo = ::Repository.find_by(id: _perm.repository_id, server_provider_id: server_provider_id) if _perm.permission
+          @permissions.each do |perm|
+            repo = ::Repository.find_by(id: perm.repository_id, server_provider_id: server_provider_id) if perm.permission
             @repositories.append(repo) if repo
           end
           @repositories
@@ -50,7 +49,6 @@ module Travis
           @svn.ssh_key = @repository.token
           @svn.url = @repository.url
           @users ||= svn.users(@repository.name).map do |user|
-
             {
               email: user,
               name: user,
@@ -68,6 +66,7 @@ module Travis
           user_map = users.each_with_object({}) do |user, memo|
             memo[user[:name]] = user[:email]
           end
+          puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} USERMAP: #{user_map.inspect}"
           xml_res = svn.log(@repository.name, nil, branch: branch_name, format: 'xml')
 
           return [] unless xml_res

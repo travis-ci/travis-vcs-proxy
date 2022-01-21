@@ -16,6 +16,8 @@ module Travis
         end
 
         def repositories
+          puts "REPOSITORIES! uname: #{@username}"
+          puts " rundepots: #{p4.run_depots.inspect}" if p4
           @repositories ||= p4.run_depots.map do |depot|
             {
               name: depot['name'],
@@ -28,6 +30,7 @@ module Travis
         end
 
         def branches
+          puts "BRANCHES! uname: #{@username}, repo: #{@repository.name}"
           @branches ||= p4.run_streams("//#{@repository.name}/...").map do |stream|
             {
               name: stream['Stream'],
@@ -72,13 +75,17 @@ module Travis
         end
 
         def permissions
+          puts 'PERMISSIONS!'
           @permissions ||= users.each_with_object({}) do |user, memo|
+            puts "user: #{user.inspect}"
             p = protects(user) if user
+            puts "PROTECTS FOR #{user.inspect} AND repo : #{@repository.name}"
             if p
-              values = p.detect{ |repo| repo['depotFile'] == "//#{@repository.name}/..."}
-              values = p.detect{ |repo| repo['depotFile'] == "//..."} unless values
+              values = p.detect { |repo| repo['depotFile'] == "//#{@repository.name}/..." }
+              values ||= p.detect { |repo| repo['depotFile'] == '//...' }
             end
             memo[user[:email]] = values['perm'] if values
+            puts "setting perms for user #{user[:email].inspect} to #{memo[user[:email]].inspect} for repo: #{@repository.name}"
           rescue P4Exception => e
             puts e.message.inspect
           end
@@ -123,29 +130,33 @@ module Travis
           token = token_for_user(user[:email])
           return nil unless token
 
-          _p4 = ::P4.new
-          _p4.charset = 'utf8'
-          _p4.port = @url
-          _p4.user = user[:name]
-          _p4.password = token
-          _p4.ticket_file = '/dev/null'
-          _p4.connect
-          _p4.run_trust('-y')
-          result = _p4.run_protects
-          _p4.disconnect
+          tmp_p4 = ::P4.new
+          tmp_p4.charset = 'utf8'
+          tmp_p4.port = @url
+          tmp_p4.user = user[:name]
+          tmp_p4.password = token
+          tmp_p4.ticket_file = '/dev/null'
+          tmp_p4.connect
+          tmp_p4.run_trust('-y')
+          puts "running protects for #{@url.inspect} and user: #{user[:name]}"
+          result = tmp_p4.run_protects
+          puts "PROTECTS RESULT : #{result.inspect}"
+          tmp_p4.disconnect
           result
         rescue P4Exception => e
           puts e.message.inspect
         end
 
         def token_for_user(email)
-          return @repository.token if @repository.token&.length > 0
+          return @repository.token if @repository.token&.length&.positive?
 
           user = User.find_by(email: email)
+          puts "user: #{user.inspect}"
           return @repository.server_provider.token unless user
 
+          puts 'token from settings'
           setting = user.server_provider_permission(@repository.server_provider_id)&.setting
-          setting.token if setting
+          setting&.token
         end
 
         def p4
@@ -159,12 +170,14 @@ module Travis
           @p4.ticket_file = '/dev/null'
           @p4.connect
           @p4.run_trust('-y')
+
+          puts "conn.running protects for #{@url.inspect} and user: #{@username}"
           @p4.run_protects
 
           @p4
         rescue P4Exception => e
           puts e.message.inspect
-          #raise
+          # raise
         end
       end
     end

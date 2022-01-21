@@ -1,17 +1,30 @@
 # frozen_string_literal: true
 
 class RepositorySerializer < ApplicationSerializer
-  attributes :id, :name, :url, :token, :last_synced_at, :server_provider_id
+
+  SERVER_TYPE_KLASS = {
+    'perforce' => :p4_host,
+    'svn' => :svn_host,
+  }.freeze
+
+  DEFAULT_BRANCH = {
+    'perforce' => 'main',
+    'svn' => 'trunk'
+  }.freeze
+
+  attributes :id, :name, :url, :server_type, :last_synced_at, :owner_id, :url
 
   attributes(:permission) { |repo, params| params[:current_user]&.repository_permission(repo.id)&.permission }
-  attributes(:default_branch) { |repo| repo.server_provider.default_branch }
-  attributes(:url) { |repo| URI.join(Settings.web_url, "servers/#{repo.server_provider_id}") }
+  attributes(:token) { |repo, params| params[:current_user]&.repository_permission(repo.id)&.setting&.token }
+  attributes(:username) { |repo, params| params[:current_user]&.repository_permission(repo.id)&.setting&.username }
+  attributes(:default_branch) { |repo| DEFAULT_BRANCH[repo.server_type] }
   attributes(:owner) do |repo|
     {
-      id: repo.server_provider.id,
+      id: repo.owner_id,
+      type: repo.owner_type
     }
   end
-  attributes(:slug) { |repo| "#{repo.server_provider.name}/#{repo.name}" }
-  attributes(:server_type) { |repo| repo.server_provider.provider_type }
-  attributes(:source_url) { |repo| repo.url == 'STUB' ? repo.server_provider.url : repo.url }
+  attribute(:type) { |repo| repo.server_type }
+  attributes(:slug) { |repo| "#{repo.ownerName }/#{repo.name}" }
+  attributes(:source_url) { |repo| repo.url}
 end

@@ -37,7 +37,8 @@ Rails.application.routes.draw do
         post :reset_password
         post :sync
 
-        get :server_providers
+        get :organizations
+        get :organizations_for_choice
         get :repositories
       end
 
@@ -50,10 +51,13 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :server_providers, only: [:create, :show, :update] do
+    resources :organizations, only: [:create, :show, :update, :destroy] do
+      post :invite
+
       collection do
-        get :by_url
-        post :add_by_url
+        get :by_name
+        post :add_by_name
+        post :confirm_invitation
       end
 
       member do
@@ -61,11 +65,19 @@ Rails.application.routes.draw do
         post :forget
         post :sync
 
+        get :users
         get :repositories
+      end
+
+      resources :user, controller: 'organizations/organization_users', only: [] do
+        post :add
+        post :update
+        post :remove
+        get :show
       end
     end
 
-    resources :repositories, only: [:create, :show, :update] do
+    resources :repositories, only: [:create, :show, :update, :destroy, :by_name, :add] do
       resources :branches, controller: 'repositories/branches', only: [:index, :show]
       resources :commits, controller: 'repositories/commits', only: [:index, :show]
       resources :webhooks, controller: 'repositories/webhooks', only: [:index, :show, :create, :update]
@@ -82,6 +94,7 @@ Rails.application.routes.draw do
         get 'content/:ref/(*path)', action: :content, format: false
         post :sync
       end
+      get :by_name
     end
   end
 end

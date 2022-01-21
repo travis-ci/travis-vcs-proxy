@@ -285,6 +285,7 @@ Devise.setup do |config|
   #
   config.jwt do |jwt|
     jwt.secret = Settings.jwt.secret
+    jwt.expiration_time = 2.weeks.to_i
 
     jwt.dispatch_requests = [
       ['POST', %r{^/v1/users/login$}],

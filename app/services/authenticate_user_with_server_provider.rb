@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-class AuthenticateUserWithServerProvider
-  def initialize(server_provider_permission, server_provider, params)
-    @server_provider_permission = server_provider_permission
-    @server_provider = server_provider
+class AuthenticateRepository
+  def initialize(repository_permission, repository, params)
+    @repository_permission = server_provider_permission
+    @repository = repository
     @username = params[:username]
     @password = params[:token]
     @svn_realm = params[:svn_realm]
   end
 
   def call
-    case @server_provider
-    when P4ServerProvider then authenticate_p4
-    when SvnServerProvider then authenticate_svn
+    case @repository.server_type
+    when 'perforce' then authenticate_p4
+    when 'svn' then authenticate_svn
     end
   end
 
@@ -20,12 +20,12 @@ class AuthenticateUserWithServerProvider
 
   def authenticate_p4
     begin
-      ValidateP4Credentials.new(@username, @password, @server_provider.url).call
+      ValidateP4Credentials.new(@username, @password, @repository.url).call
     rescue ValidateP4Credentials::ValidationFailed
       return false
     end
 
-    setting = @server_provider_permission.setting || @server_provider_permission.build_setting
+    setting = @repository_permission.setting || @repository_permission.build_setting
     setting.token = @password
     setting.username = @username
     setting.save
@@ -33,12 +33,12 @@ class AuthenticateUserWithServerProvider
 
   def authenticate_svn
     begin
-      ValidateSvnCredentials.new(@username, @password, @server_provider.url, @svn_realm).call
+      ValidateSvnCredentials.new(@username, @password, @repository.url, @svn_realm).call
     rescue ValidateSvnCredentials::ValidationFailed
       return false
     end
 
-    setting = @server_provider_permission.setting || @server_provider_permission.build_setting
+    setting = @repository_permission.setting || @repository_permission.build_setting
     setting.token = @password
     setting.username = @username
     setting.save

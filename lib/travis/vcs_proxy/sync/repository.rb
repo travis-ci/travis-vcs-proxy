@@ -5,29 +5,26 @@ module Travis
     module Sync
       class Repository
         def initialize(repository, user)
-          @host_type = repository.server_provider.host_type
+          @host_type = repository.server_type
           @repository = repository
           @user = user
         end
 
         def sync # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
+          puts "SYNC REPO #{@repository.name}"
           username = @repository.settings(@host_type).username
           token = @repository.token
           if username.blank? || token.blank?
-            if server_provider_user_setting = @user.server_provider_permission(@repository.server_provider_id)&.setting
-              username = server_provider_user_setting.username
-              token = server_provider_user_setting.token
+            if organization_user_setting = @user.organization_permission(@repository.owner_id)&.setting
+              username = organization_user_setting.username
+              token = organization_user_setting.token
             end
-          end
-
-          if username.blank? || token.blank?
-            username = @repository.server_provider.settings(@host_type).username
-            token = @repository.server_provider.token
           end
 
           return if username.blank? || token.blank?
 
           repo = @repository.repo(username, token)
+          puts "type: #{@host_type.inspect}"
 
           repo.branches.each do |branch|
             branch_name = branch[:name].sub(%r{\A//#{Regexp.escape(@repository.name)}/}, '')
@@ -49,7 +46,7 @@ module Travis
             # Remove users that don't have access anymore
             (db_emails - repo_emails).each do |email|
               u = users[email]&.first
-              u.repository_permission(@repository.id).delete if u
+              u&.repository_permission(@repository.id)&.delete
             end
 
             perms.each do |email, permission|

@@ -6,6 +6,8 @@ class RepositoryPermission < ApplicationRecord
 
   enum permission: %i[read write admin super]
 
+  has_one :setting, class_name: 'RepositoryUserSetting', foreign_key: :repository_permission_id, dependent: :delete
+
   def owner?
     admin? || super?
   end

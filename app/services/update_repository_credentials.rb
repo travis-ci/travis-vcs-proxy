@@ -11,13 +11,12 @@ class UpdateRepositoryCredentials
   end
 
   def call # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    server_provider = case @entity
-                      when Repository then @entity.server_provider
-                      when ServerProvider then @entity
+    server_type = case @entity
+                      when Repository then @entity.server_type
                       end
 
-    case server_provider
-    when P4ServerProvider
+    case server_type
+    when 'perforce'
       if @username.present? || @password.present?
         begin
           ValidateP4Credentials.new(@username, @password, server_provider.url).call
@@ -30,7 +29,7 @@ class UpdateRepositoryCredentials
       @entity.token = @password
       @entity.save
 
-    when SvnServerProvider
+    when 'svn'
       if @username.present? || @password.present?
         begin
           ValidateSvnCredentials.new(@username, @password, server_provider.url, @svn_realm).call

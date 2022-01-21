@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-class SvnServerProvider < ServerProvider
-  include SvnHostSettings
+class SvnServerType < ServerType
   include EncryptedToken
 
   def bare_repo(repository = nil, username = nil, password = nil)
+    puts "SVN BARE REPO : #{repository.inspect}"
     if username.present? && password.present?
       repo_token = password
     elsif repository.present? && repository.settings(:svn_host).username.present?
@@ -15,7 +15,7 @@ class SvnServerProvider < ServerProvider
       repo_token = token
     end
 
-    Travis::VcsProxy::Repositories::Svn.new(self, repository, url, username, repo_token)
+    Travis::VcsProxy::Repositories::Svn.new(repository, url, username, repo_token)
   end
 
   def remote_repositories(username = nil, token = nil)

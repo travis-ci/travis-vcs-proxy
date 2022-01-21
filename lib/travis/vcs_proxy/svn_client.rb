@@ -36,7 +36,7 @@ module Travis
 
       def branches(repo)
         res = exec(repo, "ls #{repository_path(repo)}/branches")
-        return['trunk'] unless res
+        return ['trunk'] unless res
 
         res = res.split("\n").each { |r| r.delete_suffix!('/') }
         res << 'trunk'
@@ -62,12 +62,12 @@ module Travis
       private
 
       def repository_path(repo)
-        return "#{url}/#{repo}" unless assembla?
+        return "#{prepare_url}/#{repo}" unless assembla?
 
-        url
+        prepare_url
       end
 
-      def url
+      def prepare_url
         return @url if @password
 
         u = uri(@url)
@@ -88,7 +88,8 @@ module Travis
       end
 
       def repository_name
-        uri(@url)&[:path].split('/').last
+        u = uri(@url)
+        u[:path].split('/').last if u
       end
 
       def get_branch(branch)
@@ -99,18 +100,18 @@ module Travis
         proto, url = url.split('://')
         return nil unless url
 
-        host,path = url.split('/',2)
-        path = '/' unless path && path.length > 0
-        host,user = host.split('@',2).reverse
-        user,pass = user.split(':',2) if user
-        host,port = host.split(':',2)
+        host, path = url.split('/', 2)
+        path = '/' unless path&.length&.positive?
+        host, user = host.split('@', 2).reverse
+        user, pass = user.split(':', 2) if user
+        host, port = host.split(':', 2)
         {
-          :proto => proto,
-          :host => host,
-          :port => port,
-          :path => path,
-          :user => user,
-          :pass => pass
+          proto: proto,
+          host: host,
+          port: port,
+          path: path,
+          user: user,
+          pass: pass,
         }
       end
     end

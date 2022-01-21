@@ -27,20 +27,28 @@ class User < ApplicationRecord
 
   validate :password_complexity
 
-  has_many :server_provider_permissions
-  has_many :server_providers, through: :server_provider_permissions
+  has_many :organization_permissions
+  has_many :organizations, through: :organization_permissions
 
   has_many :repository_permissions
   has_many :repositories, through: :repository_permissions
 
-  def server_provider_permission(server_provider_id)
-    server_provider_permissions.find_by(server_provider_id: server_provider_id)
+  def organization_permission(organization_id)
+    organization_permissions.find_by(organization_id: organization_id)
   end
 
-  def set_server_provider_permission(server_provider_id, permission)
-    perm = server_provider_permissions.find_or_initialize_by(server_provider_id: server_provider_id)
+  def set_organization_permission(organization_id, permission)
+    puts "permission: #{permission.inspect}"
+    puts "orgid: #{organization_id.inspect}"
+    perm = organization_permissions.find_or_initialize_by(organization_id: organization_id)
     perm.permission = permission
+    puts "perm: #{perm.inspect}"
     perm.save
+  end
+
+  def remove_organization_permission(organization_id)
+    perm = organization_permissions.find_by(organization_id: organization_id)
+    perm.delete! if perm
   end
 
   def repository_permission(repository_id)

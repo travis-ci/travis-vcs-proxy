@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-class P4ServerProvider < ServerProvider
-  include P4HostSettings
+class P4ServerType < ServerType
   include EncryptedToken
 
   def bare_repo(repository = nil, username = nil, password = nil)
@@ -31,7 +30,7 @@ class P4ServerProvider < ServerProvider
   def provider_type
     'perforce'
   end
-  
+
   def host_type
     :p4_host
   end
