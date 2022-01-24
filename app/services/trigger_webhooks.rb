@@ -4,10 +4,6 @@ require 'securerandom'
 
 class TriggerWebhooks
   class WebhookError < StandardError; end
-  PROVIDER_KLASS = {
-    P4ServerProvider => 'perforce',
-    SvnServerProvider => 'svn',
-  }.freeze
 
   def initialize(commit)
     @commit = commit
