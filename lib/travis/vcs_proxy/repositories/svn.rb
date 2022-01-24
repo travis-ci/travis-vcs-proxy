@@ -101,7 +101,9 @@ module Travis
               user = setting.permission.user
             end
           end
+
           user
+        end
       end
     end
   end
