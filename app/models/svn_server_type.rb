@@ -3,7 +3,7 @@
 class SvnServerType < ServerType
   include EncryptedToken
 
-  def bare_repo(repository = nil, username = nil, password = nil)
+  def self.bare_repo(repository = nil, username = nil, password = nil)
     puts "SVN BARE REPO : #{repository.inspect}"
     if username.present? && password.present?
       repo_token = password
@@ -15,11 +15,7 @@ class SvnServerType < ServerType
       repo_token = token
     end
 
-    Travis::VcsProxy::Repositories::Svn.new(repository, url, username, repo_token)
-  end
-
-  def remote_repositories(username = nil, token = nil)
-    bare_repo(nil, username, token).repositories(self.id)
+    Travis::VcsProxy::Repositories::Svn.new(repository, username, repo_token)
   end
 
   def commit_info_from_webhook(payload)

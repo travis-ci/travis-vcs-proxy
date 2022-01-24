@@ -13,15 +13,15 @@ module Travis
           puts "SYNC ORG: #{@organization.inspect}"
 
           ActiveRecord::Base.transaction do
-            puts "SYNC REPOS #{@organization.name}: #{@organization.remote_repositories.inspect}"
-            sync_repositories(@organization.remote_repositories)
+            puts "SYNC REPOS #{@organization.name}: #{@organization.repositories.inspect}"
+            sync_repositories(@organization.repositories)
 
             @organization.users.each do |user|
               puts "sync.GETTING permission #{@organization.name} for: #{user.inspect} and sp: #{@organization.id}"
-              next unless permission_setting = user.organization_permission(@organization.id).setting
+              next unless permission_setting = user.organization_permission(@organization.id)
 
-              puts "SYNC REPOS #{@organization.name} FOR USER: #{permission_setting.username} #{@organization.remote_repositories.inspect}"
-              sync_repositories(@organization.remote_repositories(permission_setting.username, permission_setting.token))
+              puts "SYNC REPOS #{@organization.name} #{@organization.repositories.inspect}"
+              sync_repositories(@organization.repositories)
             end
           end
         end

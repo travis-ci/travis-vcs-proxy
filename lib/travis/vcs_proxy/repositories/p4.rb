@@ -8,30 +8,16 @@ module Travis
       class P4
         class PermissionNotFound < StandardError; end
 
-        def initialize(repository, url, username, token)
+        def initialize(repository, username, token)
           @repository = repository
-          @url = url
+          @url = repository&.url
           @username = username
           @token = token
         end
 
-        def repositories
-          puts "REPOSITORIES! uname: #{@username}"
-          puts " rundepots: #{p4.run_depots.inspect}" if p4
-          @repositories ||= p4.run_depots.map do |depot|
-            {
-              name: depot['name'],
-            }
-          end
-        rescue P4Exception => e
-          puts e.message.inspect
-
-          []
-        end
-
         def branches
           puts "BRANCHES! uname: #{@username}, repo: #{@repository.name}"
-          @branches ||= p4.run_streams("//#{@repository.name}/...").map do |stream|
+          @branches ||= p4.run_streams("//#{@repository.name}/...")&.map do |stream|
             {
               name: stream['Stream'],
             }
@@ -151,11 +137,7 @@ module Travis
           return @repository.token if @repository.token&.length&.positive?
 
           user = User.find_by(email: email)
-          puts "user: #{user.inspect}"
-          return @repository.server_provider.token unless user
-
-          puts 'token from settings'
-          setting = user.server_provider_permission(@repository.server_provider_id)&.setting
+          setting = user&.repository_permission(@repository.id)&.setting
           setting&.token
         end
 
@@ -168,6 +150,7 @@ module Travis
           @p4.user = @username
           @p4.password = @token
           @p4.ticket_file = '/dev/null'
+
           @p4.connect
           @p4.run_trust('-y')
 
@@ -177,7 +160,7 @@ module Travis
           @p4
         rescue P4Exception => e
           puts e.message.inspect
-          # raise
+          raise e
         end
       end
     end

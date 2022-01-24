@@ -3,7 +3,7 @@
 class P4ServerType < ServerType
   include EncryptedToken
 
-  def bare_repo(repository = nil, username = nil, password = nil)
+  def self.bare_repo(repository = nil, username = nil, password = nil)
     if username.present? && password.present?
       repo_token = password
     elsif repository.present? && repository.settings(:p4_host).username.present?
@@ -14,11 +14,7 @@ class P4ServerType < ServerType
       repo_token = token
     end
 
-    Travis::VcsProxy::Repositories::P4.new(repository, url, username, repo_token)
-  end
-
-  def remote_repositories(username = nil, token = nil)
-    bare_repo(nil, username, token).repositories
+    Travis::VcsProxy::Repositories::P4.new(repository, username, repo_token)
   end
 
   def commit_info_from_webhook(payload)

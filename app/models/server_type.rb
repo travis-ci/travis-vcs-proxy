@@ -6,10 +6,6 @@ class ServerType
     raise NotImplementedError
   end
 
-  def remote_repositories
-    raise NotImplementedError
-  end
-
   def commit_info_from_webhook(payload)
     raise NotImplementedError
   end

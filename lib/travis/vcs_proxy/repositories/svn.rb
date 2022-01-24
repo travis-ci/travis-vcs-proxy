@@ -10,9 +10,9 @@ module Travis
 
         attr_accessor :svn
 
-        def initialize(repository, url, username, token)
+        def initialize(repository, username, token)
           @repository = repository
-          @url = url
+          @url = repository.url
           @username = username
           @token = token
           @svn = SvnClient.new
@@ -21,23 +21,7 @@ module Travis
           @svn.url = @url
         end
 
-
-        def repositories(server_provider_id = nil)
-          @user = get_user(server_provider_id, @username)
-          return [] unless @user
-
-          @permissions = ::RepositoryPermission.where(user_id: @user.id)
-          @repositories = []
-          @permissions.each do |perm|
-            repo = ::Repository.find_by(id: perm.repository_id, server_provider_id: server_provider_id) if perm.permission
-            @repositories.append(repo) if repo
-          end
-          @repositories
-        end
-
         def branches
-          @svn.ssh_key = @repository.token
-          @svn.url = @repository.url
           @branches ||= svn.branches(@repository.name).map do |branch|
             {
               name: branch,
@@ -46,8 +30,6 @@ module Travis
         end
 
         def users
-          @svn.ssh_key = @repository.token
-          @svn.url = @repository.url
           @users ||= svn.users(@repository.name).map do |user|
             {
               email: user,
@@ -61,12 +43,11 @@ module Travis
         end
 
         def commits(branch_name)
-          @svn.ssh_key = @repository.token
+          @svn.ssh_key = @token
           @svn.url = @repository.url
           user_map = users.each_with_object({}) do |user, memo|
             memo[user[:name]] = user[:email]
           end
-          puts "svn.SYNC COMMITS FOR: #{@repository.name}/#{branch_name} USERMAP: #{user_map.inspect}"
           xml_res = svn.log(@repository.name, nil, branch: branch_name, format: 'xml')
 
           return [] unless xml_res
@@ -76,7 +57,7 @@ module Travis
 
             next unless uname = user_map[entry.at_xpath('author')&.text]
 
-            user = get_user(@repository.server_provider.id, uname)
+            user = get_user(@repository.id, uname)
 
             next unless user
 
@@ -102,8 +83,8 @@ module Travis
           svn.content(@repository.name, path, branch: ref.ref.name, revision: ref.sha)
         end
 
-        def commit_info(change_root, username, server_provider_id)
-          user = get_user(server_provider_id, username)
+        def commit_info(change_root, username, repository_id)
+          user = get_user(repository_id, username)
           repo_name, branch = change_root.split('@')
 
           {
@@ -113,10 +94,10 @@ module Travis
           }
         end
 
-        def get_user(server_provider_id, username)
+        def get_user(repository_id, username)
           user = nil
-          ServerProviderUserSetting.where(username: username)&.each do |setting|
-            if setting.permission&.server_provider_id == server_provider_id
+          RepositoryUserSetting.where(username: username)&.each do |setting|
+            if setting.permission&.repository_id == repository_id
               user = setting.permission.user
             end
           end

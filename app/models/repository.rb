@@ -32,7 +32,7 @@ class Repository < ApplicationRecord
 
   def repo(username = nil, token = nil)
     kklass = SERVERTYPE_KLASS[self.server_type]
-    kklass.bare_repo(self, username, token)
+    kklass&.bare_repo(self, username, token)
   end
 
   def file_contents(ref, path)

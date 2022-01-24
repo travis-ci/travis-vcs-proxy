@@ -11,22 +11,17 @@ module Travis
         end
 
         def sync # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-          puts "SYNC REPO #{@repository.name}"
-          username = @repository.settings(@host_type).username
-          token = @repository.token
-          if username.blank? || token.blank?
-            if organization_user_setting = @user.organization_permission(@repository.owner_id)&.setting
-              username = organization_user_setting.username
-              token = organization_user_setting.token
-            end
-          end
-
+          permissions = @user.repository_permissions.find_by(repository_id: @repository.id);
+          username = permissions&.setting&.username
+          token = permissions&.setting&.token
           return if username.blank? || token.blank?
 
           repo = @repository.repo(username, token)
+
+          return unless repo
           puts "type: #{@host_type.inspect}"
 
-          repo.branches.each do |branch|
+          repo.branches&.each do |branch|
             branch_name = branch[:name].sub(%r{\A//#{Regexp.escape(@repository.name)}/}, '')
             branch = @repository.branches.find_or_create_by!(name: branch_name)
 
