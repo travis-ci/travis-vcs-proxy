@@ -67,6 +67,8 @@ module V1
       user_id ||= User.find_by(email: params['user_email'])&.id;
       head(:not_found) && return unless user_id
 
+      @organization = Organization.find(params['organization_id'])
+
       ActiveRecord::Base.transaction do
         inv = OrganizationInvitation.new(
           organization_id: params['organization_id'],
@@ -80,6 +82,10 @@ module V1
         token = inv.token
       end
       head(:unprocessable_entity) && return unless token
+
+      invitation_link = Settings.web_url + '/accept_invite?token=' + token
+
+      InvitationMailer.with(email: params['user_email'], organization: @organization.name, invitation_link: invitation_link).send_invitation.deliver_now
 
       render(json: {"token": token})
     end
