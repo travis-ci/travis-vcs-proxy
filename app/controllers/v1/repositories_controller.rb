@@ -91,8 +91,8 @@ module V1
       ActiveRecord::Base.transaction do
         perm = current_user.repository_permission(params['id'])
         setting = perm.setting || perm.build_setting
-        setting.username = params['username'] if params['username']
-        setting.token = params['token'] if params['token']
+        setting.username = params['repository']['username'] if params['repository']['username']
+        setting.token = params['repository']['token'] if params['repository']['token']
         unless setting.save!
           puts "SETTINGS ERROR"
           errors = setting.errors
