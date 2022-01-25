@@ -77,7 +77,7 @@ module V1
 
       head(:not_found) && return unless @repository
 
-      @organization = Organization.find(@repository.id);
+      @organization = Organization.find(params['repository']['owner_id']) if params['repository']['owner_id']
       ActiveRecord::Base.transaction do
         @repository.display_name =  params['repository']['display_name'] if params['repository']['display_name']
         @repository.owner_id = @organization.id if @organization
@@ -110,7 +110,7 @@ module V1
     def destroy
       permission = current_user.repository_permission(params[:id])
 
-      head(:forbidden) && return unless permission&.owner? 
+      head(:forbidden) && return unless permission&.owner?
       @repository.destroy
 
       head(:ok) && return
