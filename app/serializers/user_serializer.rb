@@ -14,5 +14,5 @@ class UserSerializer < ApplicationSerializer
   attribute(:organizations) { |user| user.organizations.map(&:id) }
   attribute(:uuid, &:id)
   attribute(:permission) { |user| user.has_attribute?(:permission) ? PERMISSION_NAMES[user.permission] : '' }
-  attribute(:org_permissions) { |user| OrganizationPermission.where(user_id: user.id).map{ |perm| { id: perm.id, permission: perm.permission } } }
+  attribute(:org_permissions) { |user| OrganizationPermission.where(user_id: user.id).map { |perm| { id: perm.organization_id, permission: perm.permission } } }
 end
