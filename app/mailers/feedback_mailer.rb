@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class FeedbackMailer < ApplicationMailer
-  default from: 'from@example.com'
+  default from: Settings.mail_from
   layout 'mailer'
 
   def send_feedback
