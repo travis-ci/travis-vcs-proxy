@@ -1,8 +1,10 @@
-You were invited to Organization "<%= @organization %>"
-<br><br>
-<br><br>
+Hello!
+<br>
+You’ve been invited to TCI Proxy Organization <%=@organization%> by <%= @email %>.
+<br>
+You must be logged in <p><%= link_to 'TCI Proxy', @vcsproxy_link %></p> in order to accept the invitation. Click the link below in order to accept the invitation.
+<br>
 <p><%= link_to 'Accept invitation', @invitation_link %></p>
-<br><br>
 <br><br>
 Best regards,
 <br>

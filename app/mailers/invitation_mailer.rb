@@ -8,6 +8,7 @@ class InvitationMailer < ApplicationMailer
     @email = params[:email]
     @organization = params[:organization]
     @invitation_link = params[:invitation_link]
+    @vcsproxy_link = Settings.web_url
     mail(to: @email, subject: 'Organization invitation')
   end
 end
