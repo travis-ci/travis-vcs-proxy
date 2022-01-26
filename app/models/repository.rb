@@ -35,6 +35,12 @@ class Repository < ApplicationRecord
     kklass&.bare_repo(self, username, token)
   end
 
+  def commit_info_from_webhook(payload, username, token)
+    return unless payload.key?(:change_root) && username && token
+
+    repo(username, token).commit_info(payload[:change_root], payload[:username], id)
+  end
+
   def file_contents(ref, path)
     repo.file_contents(ref, path)
   end
