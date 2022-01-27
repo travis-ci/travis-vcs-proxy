@@ -30,7 +30,7 @@ module V1
 
         head(:forbidden) && return unless OrganizationPermission.find_by(organization_id: params[:organization_id], user_id: current_user.id)&.permission == 'owner';
 
-        User.find(params[:id])&.remove_organization_permission(params[:organization_id])
+        User.find(params[:user_id])&.remove_organization_permission(params[:organization_id])
       end
 
       private
