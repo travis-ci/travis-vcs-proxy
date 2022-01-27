@@ -48,7 +48,7 @@ class User < ApplicationRecord
 
   def remove_organization_permission(organization_id)
     perm = organization_permissions.find_by(organization_id: organization_id)
-    perm.delete! if perm
+    perm.delete if perm
   end
 
   def repository_permission(repository_id)
