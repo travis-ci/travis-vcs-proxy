@@ -89,7 +89,7 @@ module V1
 
       invitation_link = Settings.web_url + '/accept_invite?token=' + token
 
-      InvitationMailer.with(email: current_user.email, organization: @organization.name, invitation_link: invitation_link).send_invitation.deliver_now
+      InvitationMailer.with(email: params['user_email'], organization: @organization.name, invitation_link: invitation_link, invited_by: current_user.email).send_invitation.deliver_now
 
       render(json: {"token": token})
     end
