@@ -40,10 +40,12 @@ module V1
       head(:forbidden) && return unless current_user.organization_permission(params[:id])&.permission == 'owner'
 
       Repository.where(owner_id: @organization.id).each do |repo|
+        Audit.create(current_user,"repository deleted: #{repo.id}")
         repo.destroy
       end
 
       @organization.destroy
+      Audit.create(current_user,"organization deleted: #{params[:id]}")
 
       head(:ok) && return
     end
@@ -82,6 +84,8 @@ module V1
         token = inv.token
       end
       head(:unprocessable_entity) && return unless token
+
+      Audit.create(current_user,"invited #{user_id} to organization #{params['organization_id']}")
 
       invitation_link = Settings.web_url + '/accept_invite?token=' + token
 

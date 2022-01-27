@@ -59,6 +59,7 @@ module V1
         puts "perm: #{perm.inspect}"
         puts "perm.se: #{perm.setting.inspect}"
       end
+      Audit.create(current_user,"repository created: #{@repository.id}") if errors.blank?
 
       puts "errors: #{errors.inspect}"
       puts "repo: #{@repository.inspect}"
@@ -80,6 +81,7 @@ module V1
       @organization = Organization.find(@repository.owner_id);
 
       head(:not_found) && return unless @organization
+      auditlog = ""
 
       if params['repository']['owner_id'] && @organization.id != params['repository']['owner_id'].to_i
         old_organization = @organization
@@ -89,8 +91,9 @@ module V1
 
         new_users = @organization.users
         old_organization.users.each do |user|
-         user.repository_permission(@repository.id).delete if new_users.where(id: user.id).empty?
+         user.repository_permission(@repository.id)&.delete if new_users.where(id: user.id).empty?
         end
+        auditlog += "organization changed from #{old_organization.id} to #{@organization.id}\n"
       end
       ActiveRecord::Base.transaction do
         @repository.display_name =  params['repository']['display_name'] if params['repository']['display_name']
@@ -101,6 +104,8 @@ module V1
           raise ActiveRecord::Rollback
         end
       end
+
+      Audit.create(current_user,"repository updated: #{@repository.id} - #{auditlog}") if errors.blank? && !auditlog.empty?
 
       ActiveRecord::Base.transaction do
         perm = current_user.repository_permission(params['id'])
@@ -126,6 +131,8 @@ module V1
 
       head(:forbidden) && return unless permission&.owner?
       @repository.destroy
+
+      Audit.create(current_user,"repository deleted: #{params[:id]}") 
 
       head(:ok) && return
     end
