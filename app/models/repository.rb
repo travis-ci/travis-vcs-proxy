@@ -25,7 +25,7 @@ class Repository < ApplicationRecord
   end
 
   def ownerName
-    Organization.find(self.owner_id)&.ane
+    Organization.find(self.owner_id)&.name
   rescue
     ''
   end
