@@ -77,7 +77,21 @@ module V1
 
       head(:not_found) && return unless @repository
 
-      @organization = Organization.find(params['repository']['owner_id']) if params['repository']['owner_id']
+      @organization = Organization.find(@repository.owner_id);
+
+      head(:not_found) && return unless @organization
+
+      if params['repository']['owner_id'] && @organization.id != params['repository']['owner_id'].to_i
+        old_organization = @organization
+        @organization = Organization.find(params['repository']['owner_id'])
+
+        head(:not_found) && return unless @organization
+
+        new_users = @organization.users
+        old_organization.users.each do |user|
+         user.repository_permission(@repository.id).delete if new_users.where(id: user.id).empty?
+        end
+      end
       ActiveRecord::Base.transaction do
         @repository.display_name =  params['repository']['display_name'] if params['repository']['display_name']
         @repository.owner_id = @organization.id if @organization
