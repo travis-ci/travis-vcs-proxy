@@ -41,7 +41,7 @@ class Repository < ApplicationRecord
     repo(username, token).commit_info(payload[:change_root], payload[:username], id)
   end
 
-  def file_contents(ref, path)
-    repo.file_contents(ref, path)
+  def file_contents(username, token, ref, path)
+    repo(username, token).file_contents(ref, path)
   end
 end

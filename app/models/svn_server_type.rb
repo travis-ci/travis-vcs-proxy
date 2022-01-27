@@ -5,17 +5,7 @@ class SvnServerType < ServerType
 
   def self.bare_repo(repository = nil, username = nil, password = nil)
     puts "SVN BARE REPO : #{repository.inspect}"
-    if username.present? && password.present?
-      repo_token = password
-    elsif repository.present? && repository.settings(:svn_host).username.present?
-      username = repository.settings(:svn_host).username
-      repo_token = repository.token
-    else
-      username = settings(:svn_host).username
-      repo_token = token
-    end
-
-    Travis::VcsProxy::Repositories::Svn.new(repository, username, repo_token)
+    Travis::VcsProxy::Repositories::Svn.new(repository, username, password)
   end
 
   def commit_info_from_webhook(payload)

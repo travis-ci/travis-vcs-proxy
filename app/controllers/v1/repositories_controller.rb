@@ -137,7 +137,12 @@ module V1
         commit = Commit.find_by(sha: ref, repository: @repository)
       end
 
-      result = @repository.file_contents(commit, params[:path])
+
+      permission = current_user.repository_permission(@repository.id)
+
+      head(:forbidden) && return unless permission && permission&.setting
+
+      result = @repository.file_contents(permission.setting.username, permission.setting.token, commit, params[:path])
       render(json: { errors: ['Cannot render file'] }, status: :unprocessable_entity) && return if result.blank?
 
       render plain: result
