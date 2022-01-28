@@ -161,6 +161,8 @@ module V1
       repositories = repositories.order(params[:sort_by] => order) if params[:sort_by].present?
       repositories = repositories.where('name LIKE ?', "%#{params[:filter]}%") if params[:filter].present?
 
+      repositories = repositories.joins(:permissions).where('repository_permissions.user_id = ?', current_user.id)
+
       render json: paginated_collection(:repositories, :repository, repositories.page(params[:page])&.per(params[:limit]))
     end
 

@@ -31,7 +31,7 @@ module V1
             owner_type: 'Organization',
             last_synced_at: Time.now
           )
-          head(:forbidden) && return unless @repository.validate(params['username'], params['token'])
+          render(json: { errors: ['could not validate credentials'] }, status: :forbidden) && return unless @repository.validate(params['username'], params['token'])
 
           unless @repository.save
             errors = @repository.errors
@@ -41,7 +41,9 @@ module V1
       end
 
       unless is_new_repository
-        head(:forbidden) && return unless @repository.validate(params['username'], params['token'])
+        render(json: { errors: ['could not validate credentials'] }, status: :forbidden) && return unless @repository.validate(params['username'], params['token'])
+
+        render(json: { errors: ['repository exists'] }, status: :forbidden) && return unless current_user.repository_permission(@repository.id).nil?
       end
 
       ActiveRecord::Base.transaction do
@@ -89,7 +91,7 @@ module V1
       head(:not_found) && return unless @organization
       auditlog = ""
 
-      head(:forbidden) && return unless @repository.validate(params['repository']['username'], params['repository']['token'])
+      render(json: { errors: ['could not validate credentials'] }, status: :forbidden) && return unless @repository.validate(params['repository']['username'], params['repository']['token'])
 
       if params['repository']['owner_id'] && @organization.id != params['repository']['owner_id'].to_i
         old_organization = @organization

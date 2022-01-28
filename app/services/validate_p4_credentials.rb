@@ -29,8 +29,9 @@ class ValidateP4Credentials
     p4.run_trust('-y')
     p4.run_protects
 
-    nil
+    true
   rescue P4Exception => e
+    puts "error: #{e.message}"
     raise ValidationFailed, e.message
   end
 end
