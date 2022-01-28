@@ -11,10 +11,11 @@ class ValidateP4Credentials
     end
   end
 
-  def initialize(username, token, url)
+  def initialize(username, token, url, name)
     @username = username
     @token = token
     @url = url
+    @name = name
   end
 
   def call

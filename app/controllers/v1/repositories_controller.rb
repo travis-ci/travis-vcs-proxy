@@ -31,11 +31,17 @@ module V1
             owner_type: 'Organization',
             last_synced_at: Time.now
           )
+          head(:forbidden) && return unless @repository.validate(params['username'], params['token'])
+
           unless @repository.save
             errors = @repository.errors
             raise ActiveRecord::Rollback
           end
         end
+      end
+
+      unless is_new_repository
+        head(:forbidden) && return unless @repository.validate(params['username'], params['token'])
       end
 
       ActiveRecord::Base.transaction do
@@ -82,6 +88,8 @@ module V1
 
       head(:not_found) && return unless @organization
       auditlog = ""
+
+      head(:forbidden) && return unless @repository.validate(params['username'], params['token'])
 
       if params['repository']['owner_id'] && @organization.id != params['repository']['owner_id'].to_i
         old_organization = @organization

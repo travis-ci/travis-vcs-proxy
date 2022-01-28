@@ -9,16 +9,23 @@ class ValidateSvnCredentials
     end
   end
 
-  def initialize(username, password, url, svn_realm = '')
+  def initialize(username, password, url, name, svn_realm = '')
     @username = username
     @password = password
     @url = url
+    @name = name
     @svn_realm = svn_realm
   end
 
   def call
     raise ValidationFailed, e.message unless @username && @password
 
-    true
+    svn = Travis::VcsProxy::SvnClient.new
+    svn.username = @username
+    svn.ssh_key = @password
+    svn.url = @url
+    res = svn.ls(@name);
+    puts "SVN VALIDATION : #{res}"
+    !res.empty?
   end
 end

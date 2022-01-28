@@ -16,6 +16,11 @@ class Repository < ApplicationRecord
       'svn' => ::SvnServerType,
   }.freeze
 
+  VALIDATE_KLASS = {
+      'perforce' => ValidateP4Credentials,
+      'svn' => ValidateSvnCredentials,
+  }.freeze
+
   def branches
     refs.branch
   end
@@ -43,5 +48,10 @@ class Repository < ApplicationRecord
 
   def file_contents(username, token, ref, path)
     repo(username, token).file_contents(ref, path)
+  end
+
+  def validate(username, token)
+    kklass = VALIDATE_KLASS[self.server_type]
+    kklass&.new(username, token, self.url, self.name).call
   end
 end
