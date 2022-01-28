@@ -40,7 +40,7 @@ module V1
 
       ActiveRecord::Base.transaction do
         perm = current_user.repository_permissions.build(repository_id: @repository.id)
-        perm.permission = is_new_repository ? 'admin' : 'member'
+        perm.permission = is_new_repository ? 'admin' : 'write'
         unless perm.save!
           puts "PERMS ERROR"
           errors = perm.errors
@@ -132,7 +132,7 @@ module V1
       head(:forbidden) && return unless permission&.owner?
       @repository.destroy
 
-      Audit.create(current_user,"repository deleted: #{params[:id]}") 
+      Audit.create(current_user,"repository deleted: #{params[:id]}")
 
       head(:ok) && return
     end
