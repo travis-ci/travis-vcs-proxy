@@ -104,7 +104,7 @@ module V1
     def users
       users = User.select('users.*, organization_permissions.permission').joins(:organization_permissions).where("organization_permissions.organization_id = ?", @organization.id)
       users = users.order(params[:sort_by] => 'ASC') if params[:sort_by].present?
-      users = users.where('name LIKE ?', "%#{params[:filter]}%") if params[:filter].present?
+      users = users.where('email LIKE ?', "%#{params[:filter]}%") if params[:filter].present?
 
       render json: paginated_collection(:users, :user, users.page(params[:page])&.per(params[:limit]))
     end

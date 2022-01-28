@@ -18,7 +18,7 @@ class ValidateSvnCredentials
   end
 
   def call
-    raise ValidationFailed, e.message unless @username && @password
+    raise ValidationFailed unless @username && @password
 
     svn = Travis::VcsProxy::SvnClient.new
     svn.username = @username

@@ -89,7 +89,7 @@ module V1
       head(:not_found) && return unless @organization
       auditlog = ""
 
-      head(:forbidden) && return unless @repository.validate(params['username'], params['token'])
+      head(:forbidden) && return unless @repository.validate(params['repository']['username'], params['repository']['token'])
 
       if params['repository']['owner_id'] && @organization.id != params['repository']['owner_id'].to_i
         old_organization = @organization
