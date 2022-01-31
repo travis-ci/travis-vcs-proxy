@@ -34,6 +34,13 @@ module Travis
         res.split("\n")
       end
 
+
+      def validate(repo)
+        res = exec(repo, "ls #{repository_path(repo)}/")
+        !res.empty?
+      end
+
+
       def branches(repo)
         res = exec(repo, "ls #{repository_path(repo)}/branches")
         return ['trunk'] unless res
