@@ -134,8 +134,6 @@ module Travis
         end
 
         def token_for_user(email)
-          return @repository.token if @repository.token&.length&.positive?
-
           user = User.find_by(email: email)
           setting = user&.repository_permission(@repository.id)&.setting
           setting&.token
