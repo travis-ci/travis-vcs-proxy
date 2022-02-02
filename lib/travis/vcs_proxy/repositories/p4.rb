@@ -95,7 +95,7 @@ module Travis
           nil
         end
 
-        def commit_info(change_root, username)
+        def commit_info(change_root, username, id)
           matches = change_root.match(%r{\A//([^/]+)/([^/]+)})
           return if matches.nil?
 
