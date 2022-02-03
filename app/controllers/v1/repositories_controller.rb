@@ -41,9 +41,9 @@ module V1
       end
 
       unless is_new_repository
-        render(json: { errors: ['Could not validate credentials.'] }, status: :forbidden) && return unless @repository.validate(params['username'], params['token'])
+        render(json: { errors: ['Could not validate credentials'] }, status: :forbidden) && return unless @repository.validate(params['username'], params['token'])
 
-        render(json: { errors: ['Repository with this URL already exists.'] }, status: :forbidden) && return unless current_user.repository_permission(@repository.id).nil?
+        render(json: { errors: ['Repository with this URL already exists'] }, status: :forbidden) && return unless current_user.repository_permission(@repository.id).nil?
       end
 
       ActiveRecord::Base.transaction do
