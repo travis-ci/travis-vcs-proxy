@@ -31,6 +31,11 @@ module V1
         head(:forbidden) && return unless OrganizationPermission.find_by(organization_id: params[:organization_id], user_id: current_user.id)&.permission == 'owner';
 
         User.find(params[:user_id])&.remove_organization_permission(params[:organization_id])
+
+        organization = Organization.includes(:organization_permissions).find(params[:organization_id])
+        organization&.repositories.each do |repo|
+          RepositoryPermission.find_by(user_id: params[:user_id], repository_id: repo.id)&.destroy
+        end
       end
 
       private
