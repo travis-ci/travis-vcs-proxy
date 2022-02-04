@@ -103,7 +103,7 @@ module V1
 
         new_users = @organization.users
         old_organization.users.each do |user|
-         user.repository_permission(@repository.id)&.delete if new_users.where(id: user.id).empty?
+         user.repository_permission(@repository.id)&.destroy if new_users.where(id: user.id).empty?
         end
         auditlog += "organization changed from #{old_organization.id} to #{@organization.id}\n"
       end
