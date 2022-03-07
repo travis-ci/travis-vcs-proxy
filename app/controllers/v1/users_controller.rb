@@ -8,6 +8,8 @@ module V1
     skip_before_action :require_2fa, only: %i[show request_password_reset reset_password]
 
     def show
+      head(:forbidden) && return unless current_user
+
       render json: presented_entity(:user, current_user)
     end
 
@@ -72,7 +74,7 @@ module V1
     end
 
     def emails
-      render json: { emails: [current_user.email] }
+      render json: { emails: [current_user&.email] }
     end
 
     def organizations

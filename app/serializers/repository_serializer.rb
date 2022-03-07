@@ -12,7 +12,7 @@ class RepositorySerializer < ApplicationSerializer
     'svn' => 'trunk'
   }.freeze
 
-  attributes :id, :name, :display_name, :url, :server_type, :last_synced_at, :owner_id, :url
+  attributes :id, :name, :display_name, :url, :server_type, :last_synced_at, :owner_id, :url, :listener_token
 
   attributes(:permission) { |repo, params| params[:current_user]&.repository_permission(repo.id)&.permission }
   attributes(:token) { |repo, params| params[:current_user]&.repository_permission(repo.id)&.setting&.token }

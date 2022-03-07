@@ -69,7 +69,7 @@ module Travis
       private
 
       def repository_path(repo)
-        return "#{prepare_url}/#{repo}" unless assembla?
+        return "#{prepare_url}" unless assembla?
 
         prepare_url
       end
@@ -81,10 +81,10 @@ module Travis
         return @url unless u
 
         if u[:port]
-          "svn+ssh://#{@username}@#{u[:host]}:#{u[:port]}#{u[:path]}" unless assembla?
+          return "svn+ssh://#{@username}@#{u[:host]}:#{u[:port]}/#{u[:path]}" unless assembla?
           "svn+ssh://#{u[:host]}:#{u[:port]}"
         else
-          "svn+ssh://#{@username}@#{u[:host]}#{u[:path]}" unless assembla?
+          return "svn+ssh://#{@username}@#{u[:host]}/#{u[:path]}" unless assembla?
           "svn+ssh://#{u[:host]}"
         end
       end

@@ -5,16 +5,21 @@ module V1
     def receive # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       puts 'WEBHOOK RECEIVED'
       puts "WEBHOOK params: #{params.inspect}"
-      head(:unauthorized) && return unless organization = Organization.find_by(listener_token: params[:token])
-      repository_name =  params[:ref]&.match(%r{\A//([^/]+)/([^/]+)}) unless params[:change_root]
-      repository_name = repository_name[1] if repository_name
-      repository_name ||= params[:change_root]&.split('@')&.first
-      puts "reponame: #{repository_name}"
+      organization = Organization.find_by(listener_token: params[:token])
+      repository = nil
+      if organization
+        repository_name =  params[:ref]&.match(%r{\A//([^/]+)/([^/]+)}) unless params[:change_root]
+        repository_name = repository_name[1] if repository_name
+        repository_name ||= params[:change_root]&.split('@')&.first
+        puts "reponame: #{repository_name}"
 
-      params[:change_root] = params[:ref] unless params[:change_root]
+        params[:change_root] = params[:ref] unless params[:change_root]
 
-      head(:ok) && return unless repository_name
-      head(:ok) && return unless repository = organization.repositories.find_by(name: repository_name)
+        head(:not_found) && return unless repository_name
+        head(:not_found) && return unless repository = organization.repositories.find_by(name: repository_name)
+      else
+        head(:unauthorized) && return unless repository = Repository.find_by(listener_token: params[:token])
+      end
 
       puts "Repository: #{repository.inspect}"
       token = nil

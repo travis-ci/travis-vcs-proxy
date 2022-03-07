@@ -10,6 +10,7 @@ class Repository < ApplicationRecord
   has_many :users, through: :permissions
   has_many :commits, dependent: :destroy
   has_many :webhooks, dependent: :destroy
+  before_save :generate_listener_token
 
   SERVERTYPE_KLASS = {
       'perforce' => P4ServerType,
@@ -53,5 +54,11 @@ class Repository < ApplicationRecord
   def validate(username, token)
     kklass = VALIDATE_KLASS[self.server_type]
     kklass&.new(username, token, self.url, self.name).call
+  end
+
+  def generate_listener_token
+    return if listener_token.present?
+
+    self.listener_token = SecureRandom.hex(40) + 'R'
   end
 end

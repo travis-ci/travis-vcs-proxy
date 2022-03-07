@@ -8,7 +8,7 @@ module V1
 
       def get
         permission = current_user.repository_permission(@repository.id)
-        head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
+        head(:forbidden) && return if permission.blank?
         head(:forbidden) && return if permission.setting.blank? || permission.setting.token.blank?
 
         render json: { token: permission.setting.token, username: permission.setting.username }
@@ -18,7 +18,7 @@ module V1
         head(:bad_request) && return if params[:username].blank? || params[:token].blank?
 
         permission = current_user.repository_permission(@repository.id)
-        head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
+        head(:forbidden) && return if permission.blank?
 
         success = false
         begin
@@ -34,7 +34,7 @@ module V1
 
       def destroy # rubocop:disable Metrics/CyclomaticComplexity
         permission = current_user.repository_permission(@repository.id)
-        head(:forbidden) && return if permission.blank? || (!permission.owner? && !permission.admin?)
+        head(:forbidden) && return if permission.blank?
 
         head(:ok) && return if UpdateRepositoryCredentials.new(@repository, {}).call
 
