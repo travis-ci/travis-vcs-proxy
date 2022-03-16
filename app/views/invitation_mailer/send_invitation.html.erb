@@ -2,10 +2,45 @@ Hello!
 <br>
 You’ve been invited to TCI Proxy Organization <%=@organization%> by <%= @invited_by %>.
 <br>
-You must be logged in <p><%= link_to 'TCI Proxy', @vcsproxy_link %></p> in order to accept the invitation. Click the link below in order to accept the invitation.
+You must be logged in <p><%= link_to 'Travis CI VCS Proxy', @vcsproxy_link %></p> in order to accept the invitation. Click the link below in order to accept the invitation.
 <br>
 <p><%= link_to 'Accept invitation', @invitation_link %></p>
 <br><br>
 Best regards,
 <br>
 Your Travis CI VCS Proxy Bot
+
+<p style="text-align:left;font-size:16px;line-height:35px;">
+  <strong>Hello <%= @email %>!</strong>
+</p>
+
+<p style="text-align:left;">
+The Travis VCS Proxy user <%= @invited_by %> invited you to the Travis CI VCS Proxy organization <%=@organization%>. 
+Travis CI Version Control System (VCS)  Proxy allows you to connect Perforce Helix Core and Apache SVN repositories to Travis CI and benefit from CI/CD automation Travis CI offers.
+</p>
+
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+You must be logged in <%= link_to 'Travis CI VCS Proxy', @vcsproxy_link %> to accept the invitation. If you already have an active Travis CI VCS Proxy account, please log in and follow this link:
+<br><br>
+<%= link_to 'Accept invitation', @invitation_link %>
+<br><br>
+If this is the first time you will be accessing Travis CI VCS Proxy, you should receive a separate email with the instructions on how to confirm your account and reset your password. Once you complete these steps, you can accept the invitation using the link above.
+</p>
+
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+Once you accept the invitation to the organization <%=@organization%>, you will need to:
+<ol>
+  <li> Add a repository to your account (please prepare credentials, repository url, and repository name). </li>
+  <li> Log in to <a href="<>" target="_blank">Travis CI ( <%= @travisci_link %> ) via the ‘Sign in via Travis CI VCS Proxy’ option and synchronize your account with Travis CI VCS Proxy. </li>
+</ol>
+<br><br>
+From here on, you can start building and testing using Travis CI!
+</p>
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+Read more on <a href="https://docs.travis-ci.com" target="_blank">adding repositories in the Travis CI VCS Proxy</a> and <a href="https://docs.travis-ci.com" target="_blank">using Travis CI via Travis CI VCS Proxy</a>. 
+<br>
+We recommend reading the <a href="https://docs.travis-ci.com" target="_blank">Getting started with Travis CI</a> pages.
+</p>
+ 
+<p style="text-align:left;color:#333333;">Thank you, and have a great day!</p>
+<p style="font-weight:700;text-align:left;color:#333333;margin:0;">The Travis CI Team</p>

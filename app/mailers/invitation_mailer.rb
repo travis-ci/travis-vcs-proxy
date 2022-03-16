@@ -9,7 +9,7 @@ class InvitationMailer < ApplicationMailer
     @organization = params[:organization]
     @invitation_link = params[:invitation_link]
     @invited_by = params[:invited_by]
-    @vcsproxy_link = Settings.web_url
-    mail(to: @email, subject: 'Organization invitation')
+    #@vcsproxy_link = Settings.web_url
+    mail(to: @email, subject: 'Travis CI VCS Proxy - Invitation to join organization')
   end
 end
