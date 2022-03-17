@@ -4,6 +4,9 @@ otp_secret_encryption_key: 12391230-12e90-2if912d120s912is0921iw9012iw9012wi1290
 p4_token_encryption_key: HTmcYwLgONSdedIPBrUcsVQjJjQkFZBE
 web_url: https://travis-vcs-proxy.travis-ci.org
 api_url: https://travis-vcs-proxy-api.travis-ci.org
+travis_url: https://app.travis-ci.com
+support_mail: 'beta.support@travis-ci.com'
+contact_mail: 'contact@travis-ci.com'
 feedback_mail: 'cancellations@travis-ci.com'
 mail_from: test@example.com
 sentry:

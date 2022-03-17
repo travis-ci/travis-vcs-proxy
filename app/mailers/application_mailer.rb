@@ -9,8 +9,8 @@ class ApplicationMailer < ActionMailer::Base
     super
     @vcsproxy_link = params.fetch(:vcsproxy_link, Settings.web_url)
     @travisci_link = params.fetch(:travisci_link, Settings.travis_url)
-    @support_mail = params.fetch(:support_mail, 'beta.support@travis-ci.com')
-    @contact_mail = params.fetch(:contact_mail, 'contact@travis-ci.com')
+    @support_mail = params.fetch(:support_mail, Settings.support_mail)
+    @contact_mail = params.fetch(:contact_mail, Settings.contact_mail)
   end
 
 
