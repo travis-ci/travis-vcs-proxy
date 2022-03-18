@@ -18,11 +18,11 @@ en:
       unconfirmed: "You have to confirm your email address before continuing."
     mailer:
       confirmation_instructions:
-        subject: "Travis CI VCS Proxy - Account confirmation"
+        subject: "Travis CI VCS Proxy - Account Confirmation"
       reset_password_instructions:
-        subject: "Travis CI VCS Proxy - Reset password instructions"
+        subject: "Travis CI VCS Proxy - Reset Password Instructions"
       unlock_instructions:
-        subject: "Travis CI VCS Proxy - Unlock instructions"
+        subject: "Travis CI VCS Proxy - Unlock Instructions"
       email_changed:
         subject: "Travis CI VCS Proxy - Email Changed"
       password_change:

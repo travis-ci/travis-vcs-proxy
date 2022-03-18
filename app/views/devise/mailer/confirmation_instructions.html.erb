@@ -52,12 +52,12 @@ You are receiving this email because Travis CI VCS Proxy created an account usin
 <p style="margin-bottom:30px;text-align:left;color:#333333;">
 To proceed further, please perform the following actions:<br><BR>
 1. First, confirm your account (email address) using the button below.<br>
-
-<div style="text-align:center;">
+</p>
+<div style="text-align:center; margin-top:25px; margin-bottom:25px">
   <%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token), :style=>'background-color:#2EB459;padding:15px;color:#FFFFFF;text-decoration:none;border-radius:2px;' %>
 </div>
-
-2. Once the account is confirmed, reset the password to your own.  Use this <a href="<%= @vcsproxy_link %>//forgot_password" target="_blank">link</a> or go to the <a href="<%= @vcsproxy_link %>" target="_blank">Travis CI VCS Proxy</a> and select the ‘Forgot your password?’ option. 
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+2. Once the account is confirmed, reset the password to your own.  Use this <a href="<%= @vcsproxy_link %>/forgot_password" target="_blank">link</a> or go to the <a href="<%= @vcsproxy_link %>" target="_blank">Travis CI VCS Proxy</a> and select the ‘Forgot your password?’ option. 
 <br> Upon completion of this step, you will receive another email with instructions to reset your account password. <br>
 3. Log in with your new  password to Travis CI VCS Proxy and set up your 2 Factor Authentication.<br>
 4. Finally, log in to <a href="<%= @travisci_link %>" target="_blank">Travis CI</a> via the ‘Sign in via Travis CI VCS Proxy’ option and synchronize your account with Travis CI VCS Proxy.
