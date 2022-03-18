@@ -1,5 +1,114 @@
-<p>Welcome <%= @email %>!</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <style>
+      /* Email styles need to be inline */
+    </style>
+  </head>
 
-<p>You can confirm your account email through the link below:</p>
+  <body style="font-size: 14px;">
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" style="height:100%;width:100%;padding:5px 10px 10px 10px;font-family:'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:18px;line-height:150%;text-align:center;color:#333333;background-color:#F4F5F9;background-image:url('https://s3.amazonaws.com/travis-ci-dzone/Travis-Email-Background.png');">
+      <tbody>
+        <tr>
+          <td align="center" valign="top">
+            <table cellspacing="0" cellpadding="0" border="0" style="max-width:500px;height:100%;margin-top:5px;padding:0px 10px;background-color:#FFFFFF;">
+              <tbody>
+                <tr>
+                  <td valign="top" align="center" style="padding:20px 0px;">
+                    <img src="https://s3.amazonaws.com/travis-email-assets/travis_ci_logo.png" alt="Travis CI Logo" title="Image: https://s3.amazonaws.com/travis-email-assets/travis_ci_logo.png" style="max-width: 150px;">
+                  </td>
+                </tr>
+                <tr>
+                  <td style="background-color:#FFFFFF;padding-bottom:20px;" valign="top" align="center">
+                    <table style="width:90%;border-top:1px solid #DCDFE2;" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <span></span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="top" align="center" style="padding:0px 25px 25px 25px;font-size:16px;">
 
-<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
+
+
+<p style="text-align:left;font-size:16px;line-height:35px;">
+Welcome to Travis CI VCS Proxy!
+</p>
+
+<p style="text-align:left;">
+Travis CI Version Control System (VCS) Proxy allows you to connect Perforce Helix Core and Apache SVN repositories to Travis CI enabling you to benefit from the CI/CD automation that Travis CI offers. 
+<br><br>
+You are receiving this email because Travis CI VCS Proxy created an account using <i><%= @email %></i> address as your login. Please ignore this message if you didn’t sign-up for TCI Proxy (closed Beta program) or if you did not receive an invitation to collaborate from one of your teammates in separate email. 
+</p>
+
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+To proceed further, please perform the following actions:<br><BR>
+1. First, confirm your account (email address) using the button below.<br>
+</p>
+<div style="text-align:center; margin-top:25px; margin-bottom:25px">
+  <%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token), :style=>'background-color:#2EB459;padding:15px;color:#FFFFFF;text-decoration:none;border-radius:2px;' %>
+</div>
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+2. Once the account is confirmed, reset the password to your own.  Use this <a href="<%= @vcsproxy_link %>/forgot_password" target="_blank">link</a> or go to the <a href="<%= @vcsproxy_link %>" target="_blank">Travis CI VCS Proxy</a> and select the ‘Forgot your password?’ option. 
+<br> Upon completion of this step, you will receive another email with instructions to reset your account password. <br>
+3. Log in with your new  password to Travis CI VCS Proxy and set up your 2 Factor Authentication.<br>
+4. Finally, log in to <a href="<%= @travisci_link %>" target="_blank">Travis CI</a> via the ‘Sign in via Travis CI VCS Proxy’ option and synchronize your account with Travis CI VCS Proxy.
+<br><br>
+Now, you can start building and testing using Travis CI!
+</p>
+
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+Read more on <a href="https://docs.travis-ci.com/user/travis-ci-vcs-proxy/" target="_blank">adding repositories in the Travis CI VCS Proxy</a> and <a href="https://docs.travis-ci.com/user/travis-ci-vcs-proxy-get-started/" target="_blank">using Travis CI via Travis CI VCS Proxy</a>. 
+<br>
+We recommend reading the <a href="https://docs.travis-ci.com/user/for-beginners/" target="_blank">Getting started with Travis CI</a> pages.
+</p>
+ 
+<p style="text-align:left;color:#333333;">Thank you, and have a great day!</p>
+<p style="font-weight:700;text-align:left;color:#333333;margin:0;">The Travis CI Team</p>
+
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top" align="center">
+            <table cellspacing="0" cellpadding="0" border="0" style="max-width:500px;height:100%;">
+              <tbody>
+                <tr>
+                  <td style="padding:40px 0px 20px 0px;color:#0068ff;font-size:18px;font-weight:300;" valign="top" align="center">Have any questions?
+                    <a href="mailto:<%= @support_mail %>?Subject=Travis%20CI%20VCS%20Proxy%20-%20Closed%20Beta" style="color:#0068FF;">We're here to help.</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align:center;padding-bottom:32px;">
+                    <a target="_blank" href="<%= @vcsproxy_link %>">
+                      <img alt="Travis CI Footer Logo" src="https://ci3.googleusercontent.com/proxy/4F3vZYJThQv1w7W1nKjQ-gIe7Ht98nXwYqz1L2LWfB8Fuhx1dz4EflRiIfghnf8n9QgMiDIXun4qfcutU4UPMctwWQX2V8vW4xi0VePgsa-UKS8=s0-d-e1-ft#https://s3.amazonaws.com/travis-ci-dzone/TravisCI-Logo-BW.png"></a>
+                    </td>
+                </tr>
+                <tr>
+                  <td style="color:#9EA3A8;font-size:10px;line-height:200%;text-align:center;padding:0px 20px 20px 20px;">
+                    <p style="margin:0px;">Travis CI GmbH, Bonner Str. 12, 51379 Leverkusen, Germany | GF/CEO: Randy Jacops | Contact:
+                      <a href="mailto:<%= @contact_mail %>" style="color:#9EA3A8;"><%= @contact_mail %></a>
+                      | Amtsgericht Charlottenburg, Berlin, HRB 140133 B | Umsatzsteuer-ID gemäß §27 a Umsatzsteuergesetz: DE282002648
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

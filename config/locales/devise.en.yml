@@ -18,15 +18,15 @@ en:
       unconfirmed: "You have to confirm your email address before continuing."
     mailer:
       confirmation_instructions:
-        subject: "Confirmation instructions"
+        subject: "Travis CI VCS Proxy - Account Confirmation"
       reset_password_instructions:
-        subject: "Reset password instructions"
+        subject: "Travis CI VCS Proxy - Reset Password Instructions"
       unlock_instructions:
-        subject: "Unlock instructions"
+        subject: "Travis CI VCS Proxy - Unlock Instructions"
       email_changed:
-        subject: "Email Changed"
+        subject: "Travis CI VCS Proxy - Email Changed"
       password_change:
-        subject: "Password Changed"
+        subject: "Travis CI VCS Proxy - Password Changed"
     omniauth_callbacks:
       failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
       success: "Successfully authenticated from %{kind} account."

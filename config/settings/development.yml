@@ -1,3 +1,4 @@
 web_url: http://localhost:13007
 api_url: http://localhost:13006
 feedback_mail: example@example.com
+travis_url: https://app.travis-ci.com

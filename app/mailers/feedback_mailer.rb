@@ -7,6 +7,6 @@ class FeedbackMailer < ApplicationMailer
   def send_feedback
     @email = params[:email]
     @feedback = params[:feedback]
-    mail(to: Settings.feedback_mail, subject: 'Account removed')
+    mail(to: Settings.feedback_mail, subject: 'Travis CI VCS Proxy - Account removed')
   end
 end
