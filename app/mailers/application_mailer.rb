@@ -5,12 +5,13 @@ class ApplicationMailer < ActionMailer::Base
   layout 'mailer'
   attr_accessor :vcsproxy_link
 
-  def initialize(params ={})
+
+  def initialize
     super
-    @vcsproxy_link = params.fetch(:vcsproxy_link, Settings.web_url)
-    @travisci_link = params.fetch(:travisci_link, Settings.travis_url)
-    @support_mail = params.fetch(:support_mail, Settings.support_mail)
-    @contact_mail = params.fetch(:contact_mail, Settings.contact_mail)
+    @vcsproxy_link = Settings.web_url
+    @travisci_link = Settings.travis_url
+    @support_mail = Settings.support_mail
+    @contact_mail = Settings.contact_mail
   end
 
 
