@@ -14,6 +14,10 @@ class SvnServerType < ServerType
     bare_repo.commit_info(payload[:change_root], payload[:username], id)
   end
 
+  def permissions(url, username, token, is_new_repository)
+    is_new_repository ? 'admin' : 'write'
+  end
+
   def provider_type
     'svn'
   end

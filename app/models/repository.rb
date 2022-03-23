@@ -56,6 +56,12 @@ class Repository < ApplicationRecord
     kklass&.new(username, token, self.url, self.name).call
   end
 
+  def permissions(username, token, is_new_repository)
+    kklass = SERVERTYPE_KLASS[self.server_type]
+    puts "perm klass: #{kklass.inspect}"
+    kklass&.permissions(self.url, username, token, is_new_repository)
+  end
+
   def generate_listener_token
     return if listener_token.present?
 

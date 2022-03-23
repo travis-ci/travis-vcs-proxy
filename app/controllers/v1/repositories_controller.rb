@@ -19,6 +19,8 @@ module V1
       @organization = Organization.find(params['repository']['owner_id'].to_i);
       puts "org: #{@organization.inspect}"
       unless @repository then
+        head(:forbidden) && return unless current_user.organization_permission(@organization.id)&.permission == 'owner'
+
         is_new_repository = true
         ActiveRecord::Base.transaction do
           @repository = Repository.new(
@@ -50,7 +52,8 @@ module V1
 
       ActiveRecord::Base.transaction do
         perm = current_user.repository_permissions.build(repository_id: @repository.id)
-        perm.permission = is_new_repository ? 'admin' : 'write'
+        perm.permission = @repository.permissions(params['username'], params['token'], is_new_repository)
+#        perm.permission = is_new_repository ? 'admin' : 'write'
         unless perm.save!
           puts "PERMS ERROR"
           errors = perm.errors

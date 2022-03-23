@@ -10,6 +10,10 @@ module V1
       if organization
         repository_name =  params[:ref]&.match(%r{\A//([^/]+)/([^/]+)}) unless params[:change_root]
         repository_name = repository_name[1] if repository_name
+        unless repository_name
+          repository_path =  params[:change_root]&.split('/')
+          repository_name = repository_path.last if repository_path.length > 1
+        end
         repository_name ||= params[:change_root]&.split('@')&.first
         puts "reponame: #{repository_name}"
 

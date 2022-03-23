@@ -13,6 +13,27 @@ class P4ServerType < ServerType
     bare_repo.commit_info(payload[:change_root], payload[:username])
   end
 
+  def permissions(url, username, password, is_new_repository)
+    p4 = P4.new
+    p4.charset = 'utf8'
+    p4.port = url
+    p4.user = username
+    p4.password = password
+    p4.ticket_file = '/dev/null'
+    p4.connect
+    p4.run_trust('-y')
+    p = p4.run_protects
+    if p
+      values = p.detect { |repo| repo['depotFile'] == "//#{@repository.name}/..." }
+      values ||= p.detect { |repo| repo['depotFile'] == '//...' }
+    end
+    puts "PERM VALUES: #{values.inspect}"
+    values['perm'] || nil
+  rescue P4Exception => e
+    puts "PERM ERROR: #{e.inspect}"
+    nil
+  end
+
   def provider_type
     'perforce'
   end
