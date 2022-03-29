@@ -58,8 +58,7 @@ class Repository < ApplicationRecord
 
   def permissions(username, token, is_new_repository)
     kklass = SERVERTYPE_KLASS[self.server_type]
-    puts "perm klass: #{kklass.inspect}"
-    kklass&.permissions(self.url, username, token, is_new_repository)
+    kklass&.new.permissions(self.url, username, token, is_new_repository)
   end
 
   def generate_listener_token
