@@ -4,7 +4,7 @@ class Organization < ApplicationRecord
   has_many :organization_permissions, dependent: :destroy
   has_many :users, through: :organization_permissions
 
-  has_many :repositories, :foreign_key => 'owner_id'
+  has_many :repositories, foreign_key: 'owner_id'
 
   validates_presence_of :name
 

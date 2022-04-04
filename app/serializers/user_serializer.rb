@@ -3,7 +3,7 @@
 class UserSerializer < ApplicationSerializer
   PERMISSION_NAMES = {
     0 => 'Admin',
-    1 => 'Member'
+    1 => 'Member',
   }.freeze
 
   attributes :id, :otp_required_for_login

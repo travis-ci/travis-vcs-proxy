@@ -5,7 +5,6 @@ class ApplicationMailer < ActionMailer::Base
   layout 'mailer'
   attr_accessor :vcsproxy_link
 
-
   def initialize
     super
     @vcsproxy_link = Settings.web_url
@@ -13,6 +12,4 @@ class ApplicationMailer < ActionMailer::Base
     @support_mail = Settings.support_mail
     @contact_mail = Settings.contact_mail
   end
-
-
 end

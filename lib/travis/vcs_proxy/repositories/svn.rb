@@ -53,8 +53,7 @@ module Travis
           return [] unless xml_res
 
           xml = Nokogiri::XML(xml_res)
-          result = xml.at_xpath('log')&.children.map do |entry|
-
+          result = xml.at_xpath('log')&.children&.map do |entry|
             next unless uname = user_map[entry.at_xpath('author')&.text]
 
             user = get_user(@repository.id, uname)
@@ -101,7 +100,6 @@ module Travis
               user = setting.permission.user
             end
           end
-
           user
         end
       end

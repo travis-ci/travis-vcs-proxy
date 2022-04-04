@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ServerType
-
   def bare_repo(*args)
     raise NotImplementedError
   end
@@ -21,7 +20,4 @@ class ServerType
   def default_branch
     raise NotImplementedError
   end
-
-  private
-
 end

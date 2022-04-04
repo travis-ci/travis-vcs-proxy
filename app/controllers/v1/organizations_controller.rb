@@ -45,7 +45,7 @@ module V1
       end
 
       @organization.destroy
-      Audit.create(current_user,"organization deleted: #{params[:id]}")
+      Audit.create(current_user, "organization deleted: #{params[:id]}")
 
       head(:ok) && return
     end
@@ -64,35 +64,16 @@ module V1
     end
 
     def invite
-      token = nil
       user_id = params['user_id']
-      user_id ||= User.find_by(email: params['user_email'])&.id;
+      user_id ||= User.find_by(email: params['user_email'])&.id
       head(:not_found) && return unless user_id
 
-      @organization = Organization.find(params['organization_id'])
-
-      ActiveRecord::Base.transaction do
-        inv = OrganizationInvitation.new(
-          organization_id: params['organization_id'],
-          user_id: user_id,
-          permission: params['permission'],
-        )
-        unless inv.save
-          errors = inv.errors
-          raise ActiveRecord::Rollback
-        end
-        token = inv.token
-      end
+      token = InviteUser.new(params['user_email'], params['organization_id'], params['permission'], current_user).call
       head(:unprocessable_entity) && return unless token
 
-      Audit.create(current_user,"invited #{user_id} to organization #{params['organization_id']}")
-
-      invitation_link = Settings.web_url + '/accept_invite?token=' + token
-
-      InvitationMailer.with(email: params['user_email'], organization: @organization.name, invitation_link: invitation_link, invited_by: current_user.email).send_invitation.deliver_now
-
-      render(json: {"token": token})
+      render(json: { "token": token })
     end
+
 
     def show
       permission = current_user.organization_permission(@organization.id)
@@ -102,7 +83,7 @@ module V1
     end
 
     def users
-      users = User.select('users.*, organization_permissions.permission').joins(:organization_permissions).where("organization_permissions.organization_id = ?", @organization.id)
+      users = User.select('users.*, organization_permissions.permission').joins(:organization_permissions).where('organization_permissions.organization_id = ?', @organization.id)
       users = users.order(params[:sort_by] => 'ASC') if params[:sort_by].present?
       users = users.where('email LIKE ?', "%#{params[:filter]}%") if params[:filter].present?
 
@@ -157,10 +138,9 @@ module V1
       order = params[:sort_by] == 'last_synced_at' ? 'DESC' : 'ASC'
       puts "org: #{@organization.repositories.inspect}"
       repositories = @organization.repositories
-                                    .includes(:permissions)
+                                  .includes(:permissions)
       repositories = repositories.order(params[:sort_by] => order) if params[:sort_by].present?
       repositories = repositories.where('name LIKE ?', "%#{params[:filter]}%") if params[:filter].present?
-
       repositories = repositories.joins(:permissions).where('repository_permissions.user_id = ?', current_user.id)
 
       render json: paginated_collection(:repositories, :repository, repositories.page(params[:page])&.per(params[:limit]))
@@ -177,9 +157,7 @@ module V1
     end
 
     def set_organization
-      puts "params: #{params.inspect}"
       @organization = Organization.includes(:organization_permissions).find(params[:id])
     end
-
   end
 end

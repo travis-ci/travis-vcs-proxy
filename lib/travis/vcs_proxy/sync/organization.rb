@@ -18,7 +18,7 @@ module Travis
 
             @organization.users.each do |user|
               puts "sync.GETTING permission #{@organization.name} for: #{user.inspect} and sp: #{@organization.id}"
-              next unless permission_setting = user.organization_permission(@organization.id)
+              next unless user.organization_permission(@organization.id)
 
               puts "SYNC REPOS #{@organization.name} #{@organization.repositories.inspect}"
               sync_repositories(@organization.repositories)

@@ -32,7 +32,7 @@ module V1
         render json: { errors: @repository.errors }, status: :unprocessable_entity
       end
 
-      def destroy # rubocop:disable Metrics/CyclomaticComplexity
+      def destroy
         permission = current_user.repository_permission(@repository.id)
         head(:forbidden) && return if permission.blank?
 

@@ -13,13 +13,13 @@ class Repository < ApplicationRecord
   before_save :generate_listener_token
 
   SERVERTYPE_KLASS = {
-      'perforce' => P4ServerType,
-      'svn' => ::SvnServerType,
+    'perforce' => P4ServerType,
+    'svn' => ::SvnServerType,
   }.freeze
 
   VALIDATE_KLASS = {
-      'perforce' => ValidateP4Credentials,
-      'svn' => ValidateSvnCredentials,
+    'perforce' => ValidateP4Credentials,
+    'svn' => ValidateSvnCredentials,
   }.freeze
 
   def branches
@@ -30,14 +30,14 @@ class Repository < ApplicationRecord
     refs.tag
   end
 
-  def ownerName
-    Organization.find(self.owner_id)&.name
-  rescue
+  def owner_name
+    Organization.find(owner_id)&.name
+  rescue # rubocop:disable Style/RescueStandardError
     ''
   end
 
   def repo(username = nil, token = nil)
-    kklass = SERVERTYPE_KLASS[self.server_type]
+    kklass = SERVERTYPE_KLASS[server_type]
     kklass&.bare_repo(self, username, token)
   end
 
@@ -52,13 +52,13 @@ class Repository < ApplicationRecord
   end
 
   def validate(username, token)
-    kklass = VALIDATE_KLASS[self.server_type]
-    kklass&.new(username, token, self.url, self.name).call
+    kklass = VALIDATE_KLASS[server_type]
+    kklass&.new(username, token, url, name)&.call
   end
 
   def permissions(username, token, is_new_repository)
-    kklass = SERVERTYPE_KLASS[self.server_type]
-    kklass&.new.permissions(self.url, username, token, is_new_repository)
+    kklass = SERVERTYPE_KLASS[server_type]
+    kklass&.new&.permissions(url, username, token, is_new_repository)
   end
 
   def generate_listener_token

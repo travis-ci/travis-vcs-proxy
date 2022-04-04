@@ -12,8 +12,8 @@ class UpdateRepositoryCredentials
 
   def call # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     server_type = case @entity
-                      when Repository then @entity.server_type
-                      end
+                  when Repository then @entity.server_type
+                  end
 
     case server_type
     when 'perforce'

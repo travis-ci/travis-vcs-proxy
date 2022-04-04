@@ -11,7 +11,7 @@ module Travis
         end
 
         def sync # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-          permissions = @user.repository_permissions.find_by(repository_id: @repository.id);
+          permissions = @user.repository_permissions.find_by(repository_id: @repository.id)
           username = permissions&.setting&.username
           token = permissions&.setting&.token
           return if username.blank? || token.blank?
@@ -19,6 +19,7 @@ module Travis
           repo = @repository.repo(username, token)
 
           return unless repo
+
           puts "type: #{@host_type.inspect}"
 
           repo.branches&.each do |branch|

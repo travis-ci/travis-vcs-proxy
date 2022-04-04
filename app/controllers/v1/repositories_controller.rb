@@ -9,24 +9,31 @@ module V1
       render json: presented_entity(:repository, @repository)
     end
 
-    def create
+    def create # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
       errors = nil
       head(:bad_request) && return if params['repository'].blank?
       is_new_repository = false
 
       @repository = Repository.find_by(name: params['repository']['name'], url: params['repository']['url'])
       puts "param: #{params.inspect}"
-      @organization = Organization.find(params['repository']['owner_id'].to_i);
+      @organization = Organization.find(params['repository']['owner_id'].to_i)
       puts "org: #{@organization.inspect}"
-      unless @repository then
+      unless @repository
         head(:forbidden) && return unless current_user.organization_permission(@organization.id)&.permission == 'owner'
+
+        url = params['repository']['url']
+        # workaround for assembla where repo url in UI doesn't contain the repo name
+        if url.include?('assembla') && !url.end_with?(params['repository']['name']) && params['repository']['server_type'] == 'svn'
+          url += '/' unless url.end_with?('/')
+          url += params['repository']['name']
+        end
 
         is_new_repository = true
         ActiveRecord::Base.transaction do
           @repository = Repository.new(
             name: params['repository']['name'],
             display_name: params['repository']['name'],
-            url: params['repository']['url'],
+            url: url,
             created_by: current_user.id,
             server_type: params['repository']['server_type'],
             owner_id: @organization.id,
@@ -53,9 +60,9 @@ module V1
       ActiveRecord::Base.transaction do
         perm = current_user.repository_permissions.build(repository_id: @repository.id)
         perm.permission = @repository.permissions(params['username'], params['token'], is_new_repository)
-#        perm.permission = is_new_repository ? 'admin' : 'write'
+        #        perm.permission = is_new_repository ? 'admin' : 'write'
         unless perm.save!
-          puts "PERMS ERROR"
+          puts "PERMS ERROR: #{perm.errors}"
           errors = perm.errors
           raise ActiveRecord::Rollback
         end
@@ -64,7 +71,7 @@ module V1
         setting.username = params['username']
         setting.token = params['token']
         unless setting.save!
-          puts "SETTINGS ERROR"
+          puts "SETTINGS ERROR: #{settings.errors.inspect}"
           errors = setting.errors
           raise ActiveRecord::Rollback
         end
@@ -72,18 +79,17 @@ module V1
         puts "perm: #{perm.inspect}"
         puts "perm.se: #{perm.setting.inspect}"
       end
-      Audit.create(current_user,"repository created: #{@repository.id}") if errors.blank?
+      Audit.create(current_user, "repository created: #{@repository.id}") if errors.blank?
 
       puts "errors: #{errors.inspect}"
       puts "repo: #{@repository.inspect}"
 
       render json: presented_entity(:repository, @repository) && return if errors.blank?
-      puts "!!!!!!!!!!!!!"
 
       render json: { errors: errors }, status: :unprocessable_entity
     end
 
-    def update
+    def update # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength
       errors = nil
       head(:bad_request) && return if params['repository'].blank?
 
@@ -91,36 +97,34 @@ module V1
 
       head(:not_found) && return unless @repository
 
-      @organization = Organization.find(@repository.owner_id);
+      @organization = Organization.find(@repository.owner_id)
 
       head(:not_found) && return unless @organization
-      auditlog = ""
+      auditlog = ''
 
       render(json: { errors: ['could not validate credentials'] }, status: :forbidden) && return unless @repository.validate(params['repository']['username'], params['repository']['token'])
 
       if params['repository']['owner_id'] && @organization.id != params['repository']['owner_id'].to_i
         old_organization = @organization
         @organization = Organization.find(params['repository']['owner_id'])
-
         head(:not_found) && return unless @organization
 
         new_users = @organization.users
         old_organization.users.each do |user|
-         user.repository_permission(@repository.id)&.destroy if new_users.where(id: user.id).empty?
+          user.repository_permission(@repository.id)&.destroy if new_users.where(id: user.id).empty?
         end
         auditlog += "organization changed from #{old_organization.id} to #{@organization.id}\n"
       end
       ActiveRecord::Base.transaction do
-        @repository.display_name =  params['repository']['display_name'] if params['repository']['display_name']
+        @repository.display_name = params['repository']['display_name'] if params['repository']['display_name']
         @repository.owner_id = @organization.id if @organization
-        puts "repo: #{@repository.inspect}"
         unless @repository.save
           errors = @repository.errors
           raise ActiveRecord::Rollback
         end
       end
 
-      Audit.create(current_user,"repository updated: #{@repository.id} - #{auditlog}") if errors.blank? && !auditlog.empty?
+      Audit.create(current_user, "repository updated: #{@repository.id} - #{auditlog}") if errors.blank? && !auditlog.empty?
 
       ActiveRecord::Base.transaction do
         perm = current_user.repository_permission(params['id'])
@@ -128,7 +132,7 @@ module V1
         setting.username = params['repository']['username'] if params['repository']['username']
         setting.token = params['repository']['token'] if params['repository']['token']
         unless setting.save!
-          puts "SETTINGS ERROR"
+          puts "SETTINGS ERROR: #{settings.errors.inspect}"
           errors = setting.errors
           raise ActiveRecord::Rollback
         end
@@ -144,10 +148,16 @@ module V1
     def destroy
       permission = current_user.repository_permission(params[:id])
 
-      head(:forbidden) && return unless permission&.owner?
+      head(:forbidden) && return unless permission
+
+      unless permission.owner?
+        permission.destroy
+        head(:ok) && return
+      end
+
       @repository.destroy
 
-      Audit.create(current_user,"repository deleted: #{params[:id]}")
+      Audit.create(current_user, "repository deleted: #{params[:id]}")
 
       head(:ok) && return
     end
@@ -172,7 +182,6 @@ module V1
       else
         commit = Commit.find_by(sha: ref, repository: @repository)
       end
-
 
       permission = current_user.repository_permission(@repository.id)
 

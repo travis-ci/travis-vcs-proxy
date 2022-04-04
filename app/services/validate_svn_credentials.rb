@@ -24,7 +24,7 @@ class ValidateSvnCredentials
     svn.username = @username
     svn.ssh_key = @password
     svn.url = @url
-    res = svn.validate(@name);
+    res = svn.validate(@name)
     puts "SVN VALIDATION : #{res}"
     res
   end

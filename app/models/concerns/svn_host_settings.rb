@@ -4,7 +4,6 @@ module SvnHostSettings
   extend ActiveSupport::Concern
 
   included do
-
     def token=(pass_value)
       settings(:svn_host).password = pass_value.blank? ? pass_value : encrypted_token(pass_value)
     end

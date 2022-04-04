@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class RepositorySerializer < ApplicationSerializer
-
   SERVER_TYPE_KLASS = {
     'perforce' => :p4_host,
     'svn' => :svn_host,
@@ -9,7 +8,7 @@ class RepositorySerializer < ApplicationSerializer
 
   DEFAULT_BRANCH = {
     'perforce' => 'main',
-    'svn' => 'trunk'
+    'svn' => 'trunk',
   }.freeze
 
   attributes :id, :name, :display_name, :url, :server_type, :last_synced_at, :owner_id, :url, :listener_token
@@ -21,10 +20,14 @@ class RepositorySerializer < ApplicationSerializer
   attributes(:owner) do |repo|
     {
       id: repo.owner_id,
-      type: repo.owner_type
+      type: repo.owner_type,
     }
   end
+
+  # rubocop:disable Style/SymbolProc
   attribute(:type) { |repo| repo.server_type }
-  attributes(:slug) { |repo| "#{repo.ownerName }/#{repo.name}" }
-  attributes(:source_url) { |repo| repo.url}
+  attributes(:slug) { |repo| "#{repo.owner_name}/#{repo.name}" }
+  attributes(:source_url) { |repo| repo.url }
+
+  # rubocop:enable Style/SymbolProc
 end

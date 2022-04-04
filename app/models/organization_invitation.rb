@@ -6,8 +6,6 @@ class OrganizationInvitation < ApplicationRecord
   before_save :generate_token
 
   def generate_token
-
-    puts "GENERATE TOKEN!"
     return if token.present?
 
     self.token = SecureRandom.hex(40)

@@ -2,16 +2,16 @@
 
 module V1
   class WebhooksController < ApplicationController
-    def receive # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    def receive # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
       puts 'WEBHOOK RECEIVED'
       puts "WEBHOOK params: #{params.inspect}"
       organization = Organization.find_by(listener_token: params[:token])
       repository = nil
       if organization
-        repository_name =  params[:ref]&.match(%r{\A//([^/]+)/([^/]+)}) unless params[:change_root]
+        repository_name = params[:ref]&.match(%r{\A//([^/]+)/([^/]+)}) unless params[:change_root]
         repository_name = repository_name[1] if repository_name
         unless repository_name
-          repository_path =  params[:change_root]&.split('/')
+          repository_path = params[:change_root]&.split('/')
           repository_name = repository_path.last if repository_path.length > 1
         end
         repository_name ||= params[:change_root]&.split('@')&.first
@@ -32,15 +32,13 @@ module V1
         setting = RepositoryUserSetting.where(username: params[:username])
         setting.each do |s|
           p = RepositoryPermission.find(s.repository_permission_id)
-          if p.repository_id == repository.id
+          next unless p.repository_id == repository.id
 
-            user = User.find(p.user_id)
-            username = s.username
-            token = repository.decrypted_token(s.value)
-            break
-          end
+          user = User.find(p.user_id)
+          token = repository.decrypted_token(s.value)
+          break
         end
-      rescue Exception => e
+      rescue Exception => e # rubocop:disable Lint/RescueException
         puts "webhookERROR: #{e.message}"
         head(:ok) && return
       end

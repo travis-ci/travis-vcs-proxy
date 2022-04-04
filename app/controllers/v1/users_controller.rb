@@ -79,10 +79,10 @@ module V1
 
     def organizations
       organizations = current_user.organizations
-                                     .includes(:organization_permissions)
-                                     .order(:name)
-                                     .page(params[:page])
-                                     .per(params[:limit])
+                                  .includes(:organization_permissions)
+                                  .order(:name)
+                                  .page(params[:page])
+                                  .per(params[:limit])
       puts "orgs: #{organizations.inspect}"
       render json: paginated_collection(:organizations, :organization, organizations)
     end
@@ -93,15 +93,14 @@ module V1
       repositories = repositories.order(params[:sort_by] => order) if params[:sort_by].present?
       repositories = repositories.where('name LIKE ?', "%#{params[:filter]}%") if params[:filter].present?
 
-      puts" repos: #{repositories.inspect}"
+      puts " repos: #{repositories.inspect}"
       render json: paginated_collection(:repositories, :repository, repositories)
-
     end
 
     def organizations_for_choice
       organizations = current_user.organizations
-                                     .includes(:organization_permissions)
-                                     .order(:name)
+                                  .includes(:organization_permissions)
+                                  .order(:name)
 
       render json: organizations.map { |org| { id: org.id, name: org.name } }
     end

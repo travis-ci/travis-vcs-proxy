@@ -11,6 +11,7 @@ module V1
         build_resource(sign_up_params)
 
         resource.save
+        handle_invitation(params) if params['organization']
         if resource.persisted?
           expire_data_after_sign_in!
           head :ok
@@ -41,6 +42,10 @@ module V1
 
       def cancel
         head :not_found
+      end
+
+      def handle_invitation(params)
+        ::InviteUser.new(params['user']['email'], params['organization']['id'], params['organization']['role'], User.find(params['current_user']['id'])).call
       end
     end
   end

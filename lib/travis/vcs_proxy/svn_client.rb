@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'tempfile'
 
 module Travis
@@ -20,8 +21,7 @@ module Travis
         c = "REPO_NAME=\"#{repo}\" SVN_SSH=\"#{svn_ssh}\" svn #{cmd}"
         res = `#{c}`
         res
-
-      rescue Exception => e
+      rescue Exception => e # rubocop:disable Lint/RescueException
         puts "SVN exec error: #{e.message}"
       ensure
         ssh_file&.unlink
@@ -34,12 +34,10 @@ module Travis
         res.split("\n")
       end
 
-
       def validate(repo)
         res = exec(repo, "ls #{repository_path(repo)}/")
         !res.empty?
       end
-
 
       def branches(repo)
         res = exec(repo, "ls #{repository_path(repo)}/branches")
@@ -69,7 +67,7 @@ module Travis
       private
 
       def repository_path(repo)
-        return "#{prepare_url}" unless assembla?
+        return prepare_url.to_s unless assembla?
 
         prepare_url
       end
@@ -82,9 +80,11 @@ module Travis
 
         if u[:port]
           return "svn+ssh://#{@username}@#{u[:host]}:#{u[:port]}/#{u[:path]}" unless assembla?
+
           "svn+ssh://#{u[:host]}:#{u[:port]}"
         else
           return "svn+ssh://#{@username}@#{u[:host]}/#{u[:path]}" unless assembla?
+
           "svn+ssh://#{u[:host]}"
         end
       end
