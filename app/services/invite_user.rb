@@ -39,7 +39,7 @@ class InviteUser
 
     invitation_link = Settings.web_url + '/accept_invite?token=' + token
 
-    InvitationMailer.with(email: @user_email, organization: organization.name, invitation_link: invitation_link, invited_by: @current_user.email).send_invitation.deliver_now
+    InvitationMailer.with(email: @email, organization: organization.name, invitation_link: invitation_link, invited_by: @current_user.email).send_invitation.deliver_now
 
     token
   end
