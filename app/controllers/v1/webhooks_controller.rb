@@ -22,6 +22,7 @@ module V1
         head(:not_found) && return unless repository_name
         head(:not_found) && return unless repository = organization.repositories.find_by(name: repository_name)
       else
+        params[:change_root] = params[:ref] unless params[:change_root]
         head(:unauthorized) && return unless repository = Repository.find_by(listener_token: params[:token])
       end
 
