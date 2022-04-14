@@ -13,7 +13,7 @@ class P4ServerType < ServerType
     bare_repo.commit_info(payload[:change_root], payload[:username])
   end
 
-  def permissions(url, username, password, is_new_repository)
+  def permissions(url, username, password, is_new_repository, repository)
     p4 = P4.new
     p4.charset = 'utf8'
     p4.port = url
@@ -24,7 +24,7 @@ class P4ServerType < ServerType
     p4.run_trust('-y')
     p = p4.run_protects
     if p
-      values = p.detect { |repo| repo['depotFile'] == "//#{@repository.name}/..." }
+      values = p.detect { |repo| repo['depotFile'] == "//#{repository.name}/..." }
       values ||= p.detect { |repo| repo['depotFile'] == '//...' }
     end
     puts "PERM VALUES: #{values.inspect}"
