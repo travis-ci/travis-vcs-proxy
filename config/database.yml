@@ -1,0 +1,19 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV['DB_HOST'] || 'localhost' %>
+  user: <%= ENV['DB_USER'] || 'root' %>
+  password: <%= ENV['DB_PASSWORD'] || 'root' %>
+
+development:
+  <<: *default
+  database: travis_vcs_proxy_development
+
+test:
+  <<: *default
+  database: travis_vcs_proxy_test
+
+production:
+  <<: *default
+  database: <%= ENV['DB_NAME'] || 'travis_vcs_proxy_production' %>
