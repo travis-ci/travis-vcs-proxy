@@ -47,7 +47,9 @@ module Travis
           user_map = users.each_with_object({}) do |user, memo|
             memo[user[:name]] = user[:email]
           end
+          puts "COMMITS for: REPONAME: #{repository_name}, branch: #{branch_name}"
           p4.run_changes('-l', "//#{repository_name}/#{branch_name}/...").map do |change|
+            puts "CHANGE: #{change.inspect}"
             next unless email = user_map[change['user']]
             next unless user = User.find_by(email: email)
 
