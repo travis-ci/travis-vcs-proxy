@@ -163,9 +163,11 @@ module Travis
 
         def repository_name
           @reponame ||= assembla? ? 'depot' : @repository.name
+        end
 
         def assembla?
           @assembla ||= @url.include?('assembla')
+        end
       end
     end
   end
