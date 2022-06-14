@@ -22,8 +22,17 @@ module Travis
 
           puts "type: #{@host_type.inspect}"
 
+          repository_name = @repository.name
+
+          puts "url: #{@repository.url}"
+
+          if @host_type == 'perforce' && @repository.url.include?('assembla')
+            repository_name = 'depot'
+          end
+
           repo.branches&.each do |branch|
-            branch_name = branch[:name].sub(%r{\A//#{Regexp.escape(@repository.name)}/}, '')
+            branch_name = branch[:name].sub(%r{\A//#{Regexp.escape(repository_name)}/}, '')
+            puts "BRANCH NAME: #{branch_name}"
             branch = @repository.branches.find_or_create_by!(name: branch_name)
 
             repo.commits(branch_name).each do |commit|
