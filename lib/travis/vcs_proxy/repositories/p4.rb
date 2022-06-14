@@ -16,8 +16,8 @@ module Travis
         end
 
         def branches
-          puts "BRANCHES! uname: #{@username}, repo: #{@repository.name}"
-          @branches ||= p4.run_streams("//#{@repository.name}/...")&.map do |stream|
+          puts "BRANCHES! uname: #{@username}, repo: #{repository_name} (#{@repository.name})"
+          @branches ||= p4.run_streams("//#{repository_name}/...")&.map do |stream|
             {
               name: stream['Stream'],
             }
@@ -47,7 +47,7 @@ module Travis
           user_map = users.each_with_object({}) do |user, memo|
             memo[user[:name]] = user[:email]
           end
-          p4.run_changes('-l', "//#{@repository.name}/#{branch_name}/...").map do |change|
+          p4.run_changes('-l', "//#{repository_name}/#{branch_name}/...").map do |change|
             next unless email = user_map[change['user']]
             next unless user = User.find_by(email: email)
 
@@ -65,9 +65,9 @@ module Travis
           @permissions ||= users.each_with_object({}) do |user, memo|
             puts "user: #{user.inspect}"
             p = protects(user) if user
-            puts "PROTECTS FOR #{user.inspect} AND repo : #{@repository.name}"
+            puts "PROTECTS FOR #{user.inspect} AND repo : #{@repository.name} (#{repository_name})"
             if p
-              values = p.detect { |repo| repo['depotFile'] == "//#{@repository.name}/..." }
+              values = p.detect { |repo| repo['depotFile'] == "//#{repository_name}/..." }
               values ||= p.detect { |repo| repo['depotFile'] == '//...' }
             end
             memo[user[:email]] = values['perm'] if values
@@ -78,7 +78,7 @@ module Travis
         end
 
         def file_contents(ref, path)
-          p4.run_print("//#{@repository.name}/#{path}")[1]
+          p4.run_print("//#{repository_name}/#{path}")[1]
         rescue P4Exception => e
           puts e.message.inspect
           file_contents_stream(ref, path)
@@ -88,7 +88,7 @@ module Travis
           return nil unless commit
 
           ref = Ref.find(commit.ref_id)
-          p4.run_print("//#{@repository.name}/#{ref.name}/#{path}")[1] if ref
+          p4.run_print("//#{repository_name}/#{ref.name}/#{path}")[1] if ref
         rescue P4Exception => e
           puts e.message.inspect
 
@@ -160,6 +160,12 @@ module Travis
           puts e.message.inspect
           raise e
         end
+
+        def repository_name
+          @reponame || = assembla? 'depot' : @repository.name
+
+        def assembla?
+          @assembla ||= @url.include?('assembla')
       end
     end
   end
