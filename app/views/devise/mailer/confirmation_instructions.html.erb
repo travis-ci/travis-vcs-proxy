@@ -40,48 +40,72 @@
 
 
 <p style="text-align:left;font-size:16px;line-height:35px;">
-TRAVIS CI ACCOUNT CREATION INSTRUCTIONS
+Welcome to the Travis CI Beta Integration with Perforce and Subversion (SVN)!
 </p>
 
-<p style="text-align:left;">
-First, thank you for signing up to use Travis CI. We are excited to have you as part of our exclusive beta program.
+<p style="margin-bottom:4px;text-align:left;color:#333333;">
+Travis CI is a quick, simple, and reliable cloud CI/CD solution that gives organizations more control over their virtual machines. Now, the power of Travis CI is available to users of Perforce and SVN repositories.
+</p>
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+This integration relies on a new Travis CI “VCS Proxy'' that sits between your Perforce/SVN repositories and Travis CI itself. The steps in this email explain how you can set up your VCS Proxy account. (Note: You received this email because a request was made to enroll <i><%= @email %></i> in the Beta program.) 
+</p>
+
+<p style="margin-bottom:4px;text-align:left;color:#333333;">
+Complete the following steps to set up a Travis CI account and connect it to the VCS Proxy (or click <a href="https://docs.travis-ci.com/user/travis-ci-vcs-proxy-get-started/" target="_blank">here</a> for more detailed instructions):
 <br><br>
-Travis CI Version Control System (VCS) Proxy allows you to connect Perforce Helix Core and Apache SVN repositories to Travis CI enabling you to benefit from the CI/CD automation that Travis CI offers. 
-<br><br>
+1. Confirm your email address by clicking the following button:
+</p>
+<div style="text-align:center; margin-top:25px; margin-bottom:25px">
+  <%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token), :style=>'background-color:#2EB459;padding:15px;color:#FFFFFF;text-decoration:none;border-radius:2px;' %>
+</div>
+
+<p style="margin-bottom:4px;text-align:left;color:#333333;">
+2. Your account is now confirmed. Next, reset your default password using this <a href="<%= @vcsproxy_link %>/forgot_password" target="_blank">link</a> (you will receive a separate email with instructions)
 </p>
 
 <p style="margin-bottom:4px;text-align:left;color:#333333;">
-To start using Travis CI, follow these steps:<br><BR>
-1. Verify your email address by going <a href="<%=confirmation_url(@resource, confirmation_token: @token)" target="_blank">here</a>
-</p>
-<p style="margin-bottom:4px;text-align:left;color:#333333;">
-2. Once your email address is confirmed, please create your own password. To do this, go to <a href="<%= @vcsproxy_link %>" target="_blank">Travis CI VCS Proxy</a> and then select <a href="<%= @vcsproxy_link %>/forgot_password" target="_blank">Forgot Your Password</a>. Then, you will get an email with instructions on how to reset your password.<br>
+3. Next, go to the <a href="<%= @travisci_link %>" target="_blank">Travis CI Beta</a> site and click the ‘Sign in’ button in the top right corner
 </p>
 
 <p style="margin-bottom:4px;text-align:left;color:#333333;">
-3. When you log-in with your new password, set up 2 Factor Authentication. This is a necessary security step.<br>
+4. On the next screen, select ‘Sign in via Travis CI VCS Proxy.’ You will now be taken to the Travis CI VCS Proxy
 </p>
+
 <p style="margin-bottom:4px;text-align:left;color:#333333;">
-4. Finally, log in to <a href="<%= @travisci_link %>" target="_blank">Travis CI</a> with the ‘Sign in via Travis CI VCS Proxy’ option and synchronize your account with Travis CI VCS Proxy.
+5. In the Travis CI VCS Proxy, follow instructions that appear on screen to sign up for 2 Factor Authentication (2FA)
 </p>
+
+<p style="margin-bottom:4px;text-align:left;color:#333333;">
+6. Repeat steps #3 and #4
+</p>
+
+<p style="margin-bottom:30px;text-align:left;color:#333333;">
+7. In the Travis CI VCS Proxy, click the “Authorize” Button. You are now set up with Travis CI and the Travis CI VCS Proxy!
+</p>
+
 <br>
 <p style="text-align:left;margin-bottom:4px">
-After creating your account, start your first build today. Here are a few resources to help you get started quickly and smoothly:<br>
-<ul style="text-align:left;">
-  <li><a href="https://docs.travis-ci.com/user/for-beginners" target="_blank">Core Concepts of Travis CI</a></li>
-  <li><a href="https://docs.travis-ci.com/user/travis-ci-vcs-proxy" target="_blank">Understanding the Travis CI VCS Proxy</a></li>
-  <li><a href="https://docs.travis-ci.com/user/travis-ci-vcs-proxy-get-started/" target="_blank">How to Get Started with Travis CI</a></li>
-</ul>
-</p>
-<br>
+As a final step, you will need to connect your Assembla repositories to the Travis CI VCS Proxy. To accomplish this, please follow the instructions found in our <a href="https://docs.travis-ci.com/user/travis-ci-vcs-proxy" target="_blank">Documentation</a>
+
 <p style="text-align:left;margin-bottom:4px">
-Remember, the <a href="https://travis-ci.community" target="_blank">Community Forum</a> is a popular place to ask questions, get answers and obtain ideas.
-<br><br>
-Any time during the beta, if you want to discuss adopting Travis CI, please contact our Customer Success Team at <a href="mailto:<%= @support_mail %>?Subject=Travis%20CI%20VCS%20Proxy%20-%20Closed%20Beta" style="color:#0068FF;"><%= @support_mail %></a>.  They will work with you to customize a plan specifically for your organization.
-<br><br>
-If you have trouble creating your account or just need help, feel free to contact  <a href="mailto:<%= @support_mail %>?Subject=Travis%20CI%20VCS%20Proxy%20-%20Closed%20Beta" style="color:#0068FF;"><%= @support_mail %></a>.  This email address has been set up specifically for the beta program and our best support staff is available to answer your questions.
-<br><br>
-Now you are ready to start using Travis CI.
+For more details on Travis CI, we recommend starting here: <a href="https://docs.travis-ci.com/user/for-beginners" target="_blank">Getting started with Travis CI</a>
+</p>
+
+<p style="text-align:left;margin-bottom:4px">
+Questions? Issues? Comments? Please message us at  <a href="mailto:<%= @support_mail %>?Subject=Travis%20CI%20VCS%20Proxy%20-%20Closed%20Beta" style="color:#0068FF;"><%= @support_mail %></a>
+</p>
+
+<p style="font-weight:700;text-align:left;margin-bottom:30px">
+As a reminder, we will give a $100 Amazon gift card to each beta participant that provides us with feedback following their trial
+</p>
+
+
+<p style="text-align:left;color:#333333;">
+Thank you, and have a great day!
+</p>
+
+<p style="font-weight:700;text-align:left;color:#333333;margin:0;">
+The Travis CI Team
 </p>
                   </td>
                 </tr>
