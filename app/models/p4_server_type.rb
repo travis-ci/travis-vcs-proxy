@@ -23,8 +23,10 @@ class P4ServerType < ServerType
     p4.connect
     p4.run_trust('-y')
     p = p4.run_protects
+
+    repository_name = url.include?('assembla') ? 'depot' : repository.name
     if p
-      values = p.detect { |repo| repo['depotFile'] == "//#{repository.name}/..." }
+      values = p.detect { |repo| repo['depotFile'] == "//#{repository_name}/..." }
       values ||= p.detect { |repo| repo['depotFile'] == '//...' }
     end
     puts "PERM VALUES: #{values.inspect}"
@@ -45,4 +47,5 @@ class P4ServerType < ServerType
   def default_branch
     'master'
   end
+
 end
