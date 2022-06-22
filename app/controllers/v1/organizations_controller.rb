@@ -40,7 +40,7 @@ module V1
       head(:forbidden) && return unless current_user.organization_permission(params[:id])&.permission == 'owner'
 
       Repository.where(owner_id: @organization.id).each do |repo|
-        Audit.create(current_user,"repository deleted: #{repo.id}")
+        Audit.create(current_user, "repository deleted: #{repo.id}")
         repo.destroy
       end
 
@@ -73,7 +73,6 @@ module V1
 
       render(json: { "token": token })
     end
-
 
     def show
       permission = current_user.organization_permission(@organization.id)

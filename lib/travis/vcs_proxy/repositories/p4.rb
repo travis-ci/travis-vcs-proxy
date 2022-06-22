@@ -164,7 +164,7 @@ module Travis
         end
 
         def repository_name
-          @reponame ||= assembla? ? 'depot' : @repository.name
+          @repository_name ||= assembla? ? 'depot' : @repository.name
         end
 
         def assembla?
