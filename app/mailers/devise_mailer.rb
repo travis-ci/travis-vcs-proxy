@@ -8,6 +8,6 @@ class DeviseMailer < Devise::Mailer
     @vcsproxy_link = Settings.web_url
     @travisci_link = Settings.travis_url
     @support_mail = Settings.support_mail
-    @contact_mail = Settings.contact_mail 
+    @contact_mail = Settings.contact_mail
   end
 end

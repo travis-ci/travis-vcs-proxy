@@ -47,5 +47,4 @@ class P4ServerType < ServerType
   def default_branch
     'master'
   end
-
 end
