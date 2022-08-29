@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe V1::Repositories::CommitsController, type: :controller do
   let(:user) { FactoryBot.create(:user, otp_required_for_login: true) }
-  let(:server_provider) { FactoryBot.create(:server_provider) }
-  let(:repository) { FactoryBot.create(:repository, server_provider: server_provider) }
+  let(:organization) { FactoryBot.create(:organization) }
+  let(:repository) { FactoryBot.create(:repository, created_by: user.id, owner_id: organization.id, owner_type: 'Organization', server_type: 'perforce') }
   let!(:repository_permission) { FactoryBot.create(:repository_permission, repository: repository, user: user) }
   let(:branch_ref) { FactoryBot.create(:ref, name: 'BranchRef', repository: repository, type: :branch) }
   let!(:commit) { FactoryBot.create(:commit, ref: branch_ref, repository: repository, user: user) }
@@ -24,8 +24,8 @@ RSpec.describe V1::Repositories::CommitsController, type: :controller do
                                       {
                                         id: commit.id,
                                         message: commit.message,
-                                        sha: commit.sha,
                                         committed_at: commit.committed_at.strftime('%Y-%m-%dT%H:%M:%S.%LZ'),
+                                        sha: "#{branch_ref.name}@#{commit.sha}",
                                         author: {
                                           name: user.name,
                                           email: user.email,
@@ -44,8 +44,8 @@ RSpec.describe V1::Repositories::CommitsController, type: :controller do
       expect(response.body).to eq(JSON.dump(
                                     id: commit.id,
                                     message: commit.message,
-                                    sha: commit.sha,
                                     committed_at: commit.committed_at.strftime('%Y-%m-%dT%H:%M:%S.%LZ'),
+                                    sha: "#{branch_ref.name}@#{commit.sha}",
                                     author: {
                                       name: user.name,
                                       email: user.email,

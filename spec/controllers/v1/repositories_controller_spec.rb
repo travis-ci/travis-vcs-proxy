@@ -4,13 +4,15 @@ require 'rails_helper'
 
 RSpec.describe V1::RepositoriesController, type: :controller do
   let(:user) { FactoryBot.create(:user, otp_required_for_login: true) }
-  let(:server_provider) { FactoryBot.create(:p4_server_provider) }
-  let(:repository) { FactoryBot.create(:repository, server_provider: server_provider) }
+  let(:organization) { FactoryBot.create(:organization) }
+  let(:repository) { FactoryBot.create(:repository, created_by: user.id, owner_id: organization.id, owner_type: 'Organization', server_type: 'perforce', listener_token: 'token') }
   let!(:repository_permission) { FactoryBot.create(:repository_permission, repository: repository, user: user) }
+  let!(:repository_user_setting) { FactoryBot.create(:repository_user_setting, username: user.email, value: 'token', permission: repository_permission) }
   let!(:branch_ref) { FactoryBot.create(:ref, name: 'BranchRef', repository: repository, type: :branch) }
 
   before do
     sign_in(user)
+    allow_any_instance_of(EncryptedToken).to receive(:decrypted_token).and_return('token')
   end
 
   describe 'GET show' do
@@ -21,17 +23,23 @@ RSpec.describe V1::RepositoriesController, type: :controller do
       expect(response.body).to eq(JSON.dump(
                                     id: repository.id,
                                     name: repository.name,
-                                    url: URI.join(Settings.web_url, "servers/#{repository.server_provider_id}"),
-                                    token: repository.token,
+                                    display_name: repository.name,
+                                    url: repository.url,
+                                    server_type: 'perforce',
                                     last_synced_at: repository.last_synced_at.strftime('%Y-%m-%dT%H:%M:%S.%LZ'),
-                                    server_provider_id: repository.server_provider_id,
+                                    owner_id: organization.id,
+                                    listener_token: 'token',
                                     permission: repository_permission.permission,
-                                    default_branch: server_provider.default_branch,
+                                    token: 'token',
+                                    username: user.email,
+                                    default_branch: 'main',
                                     owner: {
-                                      id: server_provider.id,
+                                      id: organization.id,
+                                      type: 'Organization',
                                     },
-                                    slug: "#{server_provider.name}/#{repository.name}",
-                                    server_type: server_provider.provider_type
+                                    type: repository.server_type,
+                                    slug: "#{organization.name}/#{repository.name}",
+                                    source_url: repository.url
                                   ))
     end
   end

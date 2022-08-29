@@ -44,10 +44,14 @@ module V1
         head(:ok) && return
       end
 
-      head(:ok) && return unless token
+      head(:forbidden) && return unless token
       head(:internal_server_error) && return unless commit_info = repository.commit_info_from_webhook(params, params[:username], token)
 
       # TODO: Figure out if we should really ignore the hook if there is no user with the given email
+      head(:unauthorized) && return if commit_info[:repository_name].blank?
+
+      head(:internal_server_error) && return if commit_info[:ref].blank?
+
       head(:ok) && return unless user
 
       ref = repository.refs.branch.find_by(name: commit_info[:ref])

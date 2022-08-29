@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe V1::Repositories::TokenController, type: :controller do
   let(:user) { FactoryBot.create(:user, otp_required_for_login: true) }
-  let(:server_provider) { FactoryBot.create(:server_provider) }
-  let(:repository) { FactoryBot.create(:repository, server_provider: server_provider) }
+  let(:organization) { FactoryBot.create(:organization) }
+  let(:repository) { FactoryBot.create(:repository, created_by: user.id, owner_id: organization.id, owner_type: 'Organization', server_type: 'perforce') }
   let!(:repository_permission) { FactoryBot.create(:repository_permission, repository: repository, user: user) }
   let(:branch_ref) { FactoryBot.create(:ref, name: 'BranchRef', repository: repository, type: :branch) }
   let!(:commit) { FactoryBot.create(:commit, ref: branch_ref, repository: repository, user: user) }
@@ -48,19 +48,6 @@ RSpec.describe V1::Repositories::TokenController, type: :controller do
         expect(response).to be_bad_request
       end
     end
-
-    context 'when user does not have permission' do
-      before do
-        repository_permission.permission = :read
-        repository_permission.save
-      end
-
-      it 'returns bad_request' do
-        patch :update, params: { repository_id: repository.id, username: username, token: token }
-
-        expect(response).to be_forbidden
-      end
-    end
   end
 
   describe 'DELETE destroy' do
@@ -81,19 +68,6 @@ RSpec.describe V1::Repositories::TokenController, type: :controller do
         delete :destroy, params: { repository_id: repository.id }
 
         expect(response.status).to eq(422)
-      end
-    end
-
-    context 'when user does not have permission' do
-      before do
-        repository_permission.permission = :read
-        repository_permission.save
-      end
-
-      it 'returns bad_request' do
-        delete :destroy, params: { repository_id: repository.id }
-
-        expect(response).to be_forbidden
       end
     end
   end
