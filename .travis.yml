@@ -21,6 +21,8 @@ jobs:
       script: bundle exec rspec
       before_install:
         - "gem install bundler -v 2.1.4"
+        - "curl https://storage.googleapis.com/travis-ci-misc/p4api-glibc2.3-openssl1.1.1.tgz | tar xz"
+        - "bundle config --global build.p4ruby --with-p4api_dir=$PWD/p4api-2020.1.2187281"
       before_script:
         - "RAILS_ENV=test bundle exec rake db:create"
       services:
