@@ -90,10 +90,15 @@ ActiveRecord::Schema.define(version: 2021_08_18_115729) do
 
   create_table "repositories", force: :cascade do |t|
     t.string "name", null: false
+    t.string "display_name", null: false
+    t.integer "created_by", null: false
     t.string "url", null: false
-    t.integer "server_provider_id", null: false
+    t.integer "owner_id", null: false
+    t.string "owner_type", null: false
+    t.string "server_type", null: false
     t.datetime "last_synced_at"
-    t.index ["server_provider_id", "name"], name: "index_repositories_on_server_provider_id_and_name", unique: true
+    t.string "listener_token", null: false
+    t.index ["owner_id", "name"], name: "index_repositories_on_owner_id_and_name", unique: true
   end
 
   create_table "repository_permissions", force: :cascade do |t|
@@ -195,11 +200,9 @@ ActiveRecord::Schema.define(version: 2021_08_18_115729) do
   add_foreign_key "pull_requests", "repositories"
   add_foreign_key "pull_requests", "users"
   add_foreign_key "refs", "repositories"
-  add_foreign_key "repositories", "server_providers"
   add_foreign_key "repository_permissions", "repositories"
   add_foreign_key "repository_permissions", "users"
-  add_foreign_key "server_provider_permissions", "server_providers"
-  add_foreign_key "server_provider_permissions", "users"
-  add_foreign_key "server_provider_user_settings", "server_provider_permissions", column: "server_provider_user_id"
+  add_foreign_key "organization_permissions", "organizations"
+  add_foreign_key "organization_permissions", "users"
   add_foreign_key "webhooks", "repositories"
 end
