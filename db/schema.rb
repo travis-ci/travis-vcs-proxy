@@ -109,6 +109,14 @@ ActiveRecord::Schema.define(version: 2021_08_18_115729) do
     t.index ["user_id"], name: "index_repository_permissions_on_user_id"
   end
 
+  create_table "repository_user_settings", force: :cascade do |t|
+    t.string "username", null: false
+    t.string "value", null: false
+    t.integer "repository_permission_id", null: false
+    t.boolean "is_syncing"
+    t.index ["repository_permission_id"], name: "index_repository_user_settings_on_repository_permission_id"
+  end
+
   create_table "organization_permissions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "organization_id", null: false
@@ -201,6 +209,7 @@ ActiveRecord::Schema.define(version: 2021_08_18_115729) do
   add_foreign_key "pull_requests", "users"
   add_foreign_key "refs", "repositories"
   add_foreign_key "repository_permissions", "repositories"
+  add_foreign_key "repository_user_settings", "repository_permissions", column: "repository_permission_id"
   add_foreign_key "repository_permissions", "users"
   add_foreign_key "organization_permissions", "organizations"
   add_foreign_key "organization_permissions", "users"
