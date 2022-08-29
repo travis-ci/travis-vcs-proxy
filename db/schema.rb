@@ -104,29 +104,29 @@ ActiveRecord::Schema.define(version: 2021_08_18_115729) do
     t.index ["user_id"], name: "index_repository_permissions_on_user_id"
   end
 
-  create_table "server_provider_permissions", force: :cascade do |t|
+  create_table "organization_permissions", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.integer "server_provider_id", null: false
+    t.integer "organization_id", null: false
     t.integer "permission", null: false
-    t.index ["server_provider_id"], name: "index_server_provider_permissions_on_server_provider_id"
-    t.index ["user_id"], name: "index_server_provider_permissions_on_user_id"
+    t.index ["organization_id"], name: "index_organization_permissions_on_organization_id"
+    t.index ["user_id"], name: "index_organization_permissions_on_user_id"
   end
 
-  create_table "server_provider_user_settings", force: :cascade do |t|
-    t.string "username", null: false
-    t.string "value", null: false
-    t.integer "server_provider_user_id", null: false
-    t.boolean "is_syncing"
-    t.index ["server_provider_user_id"], name: "index_server_provider_user_settings_on_server_provider_user_id"
-  end
-
-  create_table "server_providers", force: :cascade do |t|
+  create_table "organizations", force: :cascade do |t|
     t.string "name", null: false
-    t.string "url", null: false
-    t.string "type", null: false
+    t.string "description", null: false
     t.string "listener_token"
-    t.index ["listener_token"], name: "index_server_providers_on_listener_token", unique: true
-    t.index ["type", "url"], name: "index_server_providers_on_type_and_url", unique: true
+    t.index ["listener_token"], name: "index_organizations_on_listener_token", unique: true
+    t.index ["name"], name: "index_organizations_on_name", unique: true
+  end
+
+  create_table "organization_invitations", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "organization_id", null: false
+    t.integer "permission", null: false
+    t.string "token", null: false
+    t.datetime "created_at", null: false
+    t.index ["token"], name: "index_organization_invitations_on_token", unique: true
   end
 
   create_table "settings", force: :cascade do |t|
@@ -174,6 +174,13 @@ ActiveRecord::Schema.define(version: 2021_08_18_115729) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["repository_id"], name: "index_webhooks_on_repository_id"
+  end
+
+  create_table "audits" do |t|
+    t.datetime "created_at", null: false
+    t.integer "owner_id", null: false
+    t.string "owner_type", null: false
+    t.string "updates", null: false
   end
 
   add_foreign_key "commits", "refs"
