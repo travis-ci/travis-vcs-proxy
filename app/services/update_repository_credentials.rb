@@ -2,6 +2,7 @@
 
 class UpdateRepositoryCredentials
   class ValidationFailed < StandardError; end
+  class NoRights < StandardError; end
 
   def initialize(entity, params)
     @entity = entity
@@ -19,29 +20,35 @@ class UpdateRepositoryCredentials
     when 'perforce'
       if @username.present? || @password.present?
         begin
-          ValidateP4Credentials.new(@username, @password, server_provider.url).call
+          ValidateP4Credentials.new(@username, @password, @entity.url, '').call
         rescue ValidateP4Credentials::ValidationFailed
           raise ValidationFailed
         end
       end
 
-      @entity.settings(:p4_host).username = @username
-      @entity.token = @password
-      @entity.save
+      s = settings(@username, @entity)
+      if s
+        s.username = @username
+        s.token = @password
+        s.save!
+      end
 
     when 'svn'
       if @username.present? || @password.present?
         begin
-          ValidateSvnCredentials.new(@username, @password, server_provider.url, @svn_realm).call
+          ValidateSvnCredentials.new(@username, @password, @entity.url, @svn_realm).call
         rescue ValidateSvnCredentials::ValidationFailed
           raise ValidationFailed
         end
       end
 
-      @entity.settings(:svn_host).username = @username
-      @entity.settings(:svn_host).svn_realm = @svn_realm
-      @entity.token = @password
-      @entity.save
+      s = settings(@username, @entity)
+      if s
+        s.username = @username
+        s.token = @password
+        s.svn_realm = @svn_realm
+        s.save!
+      end
     end
   end
 end

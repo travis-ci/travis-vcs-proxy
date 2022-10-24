@@ -5,30 +5,30 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
   subject { FactoryBot.create(:user) }
 
-  let(:server_provider) { FactoryBot.create(:server_provider) }
+  let(:organization) { FactoryBot.create(:organization) }
 
-  context 'with server_providers' do
-    let!(:server_provider_permission) { FactoryBot.create(:server_provider_permission, server_provider: server_provider, user: subject) }
+  context 'with organizations' do
+    let!(:organization_permission) { FactoryBot.create(:organization_permission, organization: organization, user: subject) }
 
-    describe '#server_provider_permission' do
-      it 'returns permissions for specified server provider' do
-        result = subject.server_provider_permission(server_provider.id)
+    describe '#organization_permission' do
+      it 'returns permissions for specified organization' do
+        result = subject.organization_permission(organization.id)
 
-        expect(result).to eq(server_provider_permission)
+        expect(result).to eq(organization_permission)
       end
     end
 
-    describe '#set_server_provider_permission' do
-      it 'sets permissions for specified server provider' do
-        subject.set_server_provider_permission(server_provider.id, :member)
+    describe '#set_organization_permission' do
+      it 'sets permissions for specified organization' do
+        subject.set_organization_permission(organization.id, :member)
 
-        expect(server_provider_permission.reload.permission).to eq('member')
+        expect(organization_permission.reload.permission).to eq('member')
       end
     end
   end
 
   context 'with repositories' do
-    let(:repository) { FactoryBot.create(:repository, server_provider: server_provider) }
+    let(:repository) { FactoryBot.create(:repository, created_by: subject.id, owner_id: organization.id, owner_type: 'Organization', server_type: 'perforce', listener_token: 'token') }
     let!(:repository_permission) { FactoryBot.create(:repository_permission, repository: repository, user: subject) }
 
     describe '#repository_permission' do

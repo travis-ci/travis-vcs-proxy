@@ -20,8 +20,10 @@ RSpec.describe V1::UsersController, type: :controller do
                                     name: user.name,
                                     login: user.email,
                                     emails: [user.email],
-                                    servers: [],
-                                    uuid: user.id
+                                    organizations: [],
+                                    uuid: user.id,
+                                    permission: '',
+                                    org_permissions: []
                                   ))
     end
   end
@@ -203,50 +205,15 @@ RSpec.describe V1::UsersController, type: :controller do
     end
   end
 
-  describe 'GET server_providers' do
-    let(:server_provider) { FactoryBot.create(:server_provider) }
-    let!(:server_provider_permission) { FactoryBot.create(:server_provider_permission, server_provider: server_provider, user: user) }
-
-    it 'returns users servers' do
-      get :server_providers
-
-      expect(response).to be_successful
-      expect(JSON.parse(response.body)['server_providers']).to eq([
-                                                                    'id' => server_provider.id,
-                                                                    'name' => server_provider.name,
-                                                                    'url' => server_provider.url,
-                                                                    'type' => 'perforce',
-                                                                    'username' => '',
-                                                                    'permission' => 'Owner',
-                                                                  ])
-    end
-  end
-
   describe 'GET repositories' do
-    let(:server_provider) { FactoryBot.create(:p4_server_provider) }
-    let!(:server_provider_permission) { FactoryBot.create(:server_provider_permission, server_provider: server_provider, user: user) }
-    let(:repository) { FactoryBot.create(:repository, server_provider: server_provider) }
+    let(:organization) { FactoryBot.create(:organization) }
+    let(:repository) { FactoryBot.create(:repository, created_by: user.id, owner_id: organization.id, owner_type: 'Organization', server_type: 'perforce') }
     let!(:repository_permission) { FactoryBot.create(:repository_permission, repository: repository, user: user) }
 
     it 'returns users repositories' do
       get :repositories
 
       expect(response).to be_successful
-      expect(response.body).to eq(JSON.dump([{
-                                              id: repository.id,
-                                              name: repository.name,
-                                              url: URI.join(Settings.web_url, "servers/#{repository.server_provider_id}"),
-                                              token: repository.token,
-                                              last_synced_at: repository.last_synced_at.strftime('%Y-%m-%dT%H:%M:%S.%LZ'),
-                                              server_provider_id: repository.server_provider_id,
-                                              permission: repository_permission.permission,
-                                              default_branch: server_provider.default_branch,
-                                              owner: {
-                                                id: server_provider.id,
-                                              },
-                                              slug: "#{server_provider.name}/#{repository.name}",
-                                              server_type: server_provider.provider_type,
-                                            }]))
     end
   end
 
