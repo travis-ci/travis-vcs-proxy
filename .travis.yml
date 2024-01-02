@@ -25,3 +25,5 @@ jobs:
         - "RAILS_ENV=test bundle exec rake db:create"
       services:
         - redis
+before_install:
+  - gem install rubygems-update -v 3.4.22
