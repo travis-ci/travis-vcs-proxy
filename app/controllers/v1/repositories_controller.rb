@@ -14,19 +14,17 @@ module V1
       head(:bad_request) && return if params['repository'].blank?
       is_new_repository = false
 
-      @repository = Repository.find_by(name: params['repository']['name'], url: params['repository']['url'])
-      puts "param: #{params.inspect}"
+      url = params['repository']['url']
+      # workaround for assembla where repo url in UI doesn't contain the repo name
+      if url.include?('assembla') && !url.end_with?(params['repository']['name']) && params['repository']['server_type'] == 'svn'
+        url += '/' unless url.end_with?('/')
+        url += params['repository']['name']
+      end
+
+      @repository = Repository.find_by(name: params['repository']['name'], url: url)
       @organization = Organization.find(params['repository']['owner_id'].to_i)
-      puts "org: #{@organization.inspect}"
       unless @repository
         head(:forbidden) && return unless current_user.organization_permission(@organization.id)&.permission == 'owner'
-
-        url = params['repository']['url']
-        # workaround for assembla where repo url in UI doesn't contain the repo name
-        if url.include?('assembla') && !url.end_with?(params['repository']['name']) && params['repository']['server_type'] == 'svn'
-          url += '/' unless url.end_with?('/')
-          url += params['repository']['name']
-        end
 
         is_new_repository = true
         ActiveRecord::Base.transaction do
