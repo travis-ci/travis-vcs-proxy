@@ -1,9 +1,6 @@
 language: ruby
 os: linux
-dist: xenial
-
-addons:
-  postgresql: 9.6
+dist: focal
 
 rvm: 3.0.1
 
