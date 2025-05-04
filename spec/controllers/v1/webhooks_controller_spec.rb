@@ -5,30 +5,35 @@ require 'rails_helper'
 RSpec.describe V1::WebhooksController, type: :controller do
   let(:user) { FactoryBot.create(:user, otp_required_for_login: true) }
   let(:token) { 'token' }
-  let(:server_provider) { FactoryBot.create(:p4_server_provider, listener_token: 'token') }
-  let!(:server_provider_permission) { FactoryBot.create(:server_provider_permission, server_provider: server_provider, user: user) }
-  let(:repository) { FactoryBot.create(:repository, server_provider: server_provider) }
+  let(:organization) { FactoryBot.create(:organization) }
+  let(:repository) { FactoryBot.create(:repository, created_by: user.id, owner_id: organization.id, owner_type: 'Organization', server_type: 'svn', listener_token: 'token') }
   let!(:repository_permission) { FactoryBot.create(:repository_permission, repository: repository, user: user) }
+  let!(:repository_user_setting) { FactoryBot.create(:repository_user_setting, username: user.email, value: 'token', permission: repository_permission) }
+
+  let(:commit_info) do
+    {
+      email: user.email,
+      repository_name: repository.name,
+      sha: 'sha',
+      ref: 'ref',
+    }
+  end
 
   before do
     sign_in(user)
-    allow_any_instance_of(P4ServerProvider).to receive(:commit_info_from_webhook).and_return(commit_info)
+    allow_any_instance_of(EncryptedToken).to receive(:decrypted_token).and_return('token')
+
+    allow_any_instance_of(Repository).to receive(:commit_info_from_webhook).and_return(commit_info)
   end
 
   describe 'POST receive' do
     let(:params) do
       {
         token: token,
-        change_root: 'root',
+        change_root: 'trunk',
         username: user.email,
-      }
-    end
-    let(:commit_info) do
-      {
-        email: user.email,
-        repository_name: repository.name,
-        sha: 'sha',
-        ref: 'ref',
+        message: 'xxxx',
+        sha: '3',
       }
     end
 
@@ -45,7 +50,7 @@ RSpec.describe V1::WebhooksController, type: :controller do
       end
     end
 
-    context 'when server is not found' do
+    context 'when repository is not found' do
       let(:token) { 'notoken' }
 
       it 'returns an error' do
@@ -53,14 +58,12 @@ RSpec.describe V1::WebhooksController, type: :controller do
 
         post :receive, params: params
 
-        expect(response).to be_unauthorized
+        expect(response.status).to eq(401)
       end
     end
 
     context 'when there is no commit info' do
-      before do
-        allow_any_instance_of(P4ServerProvider).to receive(:commit_info_from_webhook).and_return(nil)
-      end
+      let(:commit_info) {}
 
       it 'returns an error' do
         expect(TriggerWebhooks).not_to receive(:new)
@@ -71,23 +74,9 @@ RSpec.describe V1::WebhooksController, type: :controller do
       end
     end
 
-    context 'when there is no user' do
-      before do
-        commit_info[:email] = 'no@email.com'
-      end
-
-      it 'does not trigger webhooks' do
-        expect(TriggerWebhooks).not_to receive(:new)
-
-        post :receive, params: params
-
-        expect(response).to be_successful
-      end
-    end
-
     context 'when there is no repository' do
       before do
-        commit_info[:repository_name] = 'NoREPO'
+        params[:token] = 'NONE'
       end
 
       it 'does not trigger webhooks' do
@@ -95,7 +84,7 @@ RSpec.describe V1::WebhooksController, type: :controller do
 
         post :receive, params: params
 
-        expect(response).to be_successful
+        expect(response.status).to eq(401)
       end
     end
   end

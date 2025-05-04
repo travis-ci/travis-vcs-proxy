@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe V1::Repositories::BranchesController, type: :controller do
   let(:user) { FactoryBot.create(:user, otp_required_for_login: true) }
-  let(:server_provider) { FactoryBot.create(:server_provider) }
-  let(:repository) { FactoryBot.create(:repository, server_provider: server_provider) }
+  let(:organization) { FactoryBot.create(:organization) }
+  let(:repository) { FactoryBot.create(:repository, created_by: user.id, owner_id: organization.id, owner_type: 'Organization', server_type: 'perforce') }
   let!(:repository_permission) { FactoryBot.create(:repository_permission, repository: repository, user: user) }
   let!(:branch_ref) { FactoryBot.create(:ref, name: 'BranchRef', repository: repository, type: :branch) }
 
